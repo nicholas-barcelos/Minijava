@@ -4,7 +4,7 @@ Trabalho da disciplina de compiladores 2019.2.
 
 ## Execução
 
-```python parser.py```
+```python main.py```
 
 A entrada é lida do arquivo in.txt
 
