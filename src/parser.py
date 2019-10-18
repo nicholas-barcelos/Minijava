@@ -11,30 +11,66 @@ import os
 
 class Parser:
     # Lexer
-    tokens = (
-        'NAME','NUMBER',
-        'PLUS','MINUS','TIMES','DIVIDE','EQUALS',
-        'LPAREN','RPAREN',
-        )
+    reserved = {
+        'boolean' : 'BOOLEAN',
+        'class' : 'CLASS',
+        'extends' : 'EXTENDS',
+        'public' : 'PUBLIC',
+        'static' : 'STATIC',
+        'void' : 'VOID',
+        'main' : 'MAIN',
+        'String' : 'STRING',
+        'return' : 'RETURN',
+        'int' : 'INT',
+        'if' : 'IF',
+        'else' : 'ELSE',
+        'while' : 'WHILE',
+        'System.out.println' : 'SOUT',
+        'length' : 'LENGTH',
+        'true' : 'TRUE',
+        'false' : 'FALSE',
+        'this' : 'THIS',
+        'new' : 'NEW',
+        'null' : 'NULL',
+    }
+
+    tokens = list(reserved.values) + [
+        'NAME', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS',
+        'LPAREN','RPAREN', 'COMENTLINE', 'COMENTMULT', 'LSBRACKET', 'RSBRACKET',
+        'LCBRACKET', 'RCBRACKET', 'SEMICOLON', 'DOT', 'COMMA', 'LTHAN', 'GTHAN',
+        'LTHANEQ', 'GTHANEQ', 'NOTEQ', 'AND', 'NOT'
+    ]
 
     # Tokens
 
-    t_PLUS    = r'\+'
-    t_MINUS   = r'-'
-    t_TIMES   = r'\*'
-    t_DIVIDE  = r'/'
-    t_EQUALS  = r'='
-    t_LPAREN  = r'\('
-    t_RPAREN  = r'\)'
-    t_NAME    = r'[a-zA-Z_][a-zA-Z0-9_]*'
-
-    def t_NUMBER(self, t):
-        r'\d+'
-        t.value = int(t.value)
-        return t
-
+    t_PLUS       = r'\+'
+    t_MINUS      = r'\-'
+    t_TIMES      = r'\*'
+    t_DIVIDE     = r'\/'
+    t_EQUALS     = r'\=\='
+    t_LPAREN     = r'\('
+    t_RPAREN     = r'\)'
+    t_NAME       = r'[a-zA-Z][a-zA-Z0-9_]*'
+    t_NUMBER     = r'[0-9]+'
+    t_COMENTLINE = r'\/\/\w*'
+    t_COMENTMULT = r'\/[\*]([^\*]|([\*][^/]))*[\*]\/'
+    t_LSBRACKET  = r'\['
+    t_RSBRACKET  = r'\]'
+    t_LCBRACKET  = r'\{'
+    t_RCBRACKET  = r'\}'
+    t_SEMICOLON  = r';' 
+    t_DOT        = r'\.'
+    t_COMMA      = r','
+    t_LTHAN      = r'\<'
+    t_GTHAN      = r'\>'
+    t_LTHANEQ    = r'\<\='
+    t_GTHANEQ    = r'\>\='
+    t_NOTEQ      = r'\!\='
+    t_AND        = r'\&\&'
+    t_NOT        = r'\!'
+    
     # Ignored characters
-    t_ignore = " \t"
+    t_ignore = r'\f|\t|\r'
 
     def t_newline(self, t):
         r'\n+'
@@ -53,7 +89,9 @@ class Parser:
         )
 
     # dictionary of names (for storing variables)
-    names = { }
+    names = { 
+        
+    }
 
     def p_statement_assign(self,p):
         'statement : NAME EQUALS expression'
