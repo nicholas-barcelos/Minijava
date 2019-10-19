@@ -50,7 +50,7 @@ class Parser:
     t_EQUALS     = r'\=\='
     t_LPAREN     = r'\('
     t_RPAREN     = r'\)'
-    t_NAME       = r'[a-zA-Z][a-zA-Z0-9_]*'
+    t_ID         = r'[a-zA-Z][a-zA-Z0-9_]*'
     t_NUMBER     = r'[0-9]+'
     t_LSBRACKET  = r'\['
     t_RSBRACKET  = r'\]'
@@ -97,6 +97,31 @@ class Parser:
         'prog : main LCBRACKET classe RCBRACKET'
         p[0] = nd.Node('prog0', [p[1], p[3]], [p[2], p[4]])
 
+    def p_main_class(self,p):
+        'main : CLASS ID LCBRACKET PUBLIC STATIC VOID MAIN LPAREN STRING LSBRACKET RSBRACKET ID RPAREN LCBRACKET cmd RCBRACKET RCBRACKET'
+        p[0] = nd.Node('main', [ p[2], p[12], p[15] ] , [ p[1], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[13], p[14], p[16], p[17] ])
+
+    def p_classe_id(self,p):
+        'classe : CLASS ID optextends LCBRACKET loopvar loopmetodo RCBRACKET'
+        p[0] = nd.Node('classe', [ p[1], p[2], p[3], p[5], p[6] ] , [ p[4], p[7]] )
+
+    def p_optextends_part(self,p):
+        """optextends : EXTENDS ID
+                      |
+        """
+        p[0] = nd.Node('optextends', [p[2]], [p[1]])
+
+    def p_loopvar_ini(self,p):
+        """loopvar : var loopvar 
+                   |
+        """
+        p[0] = nd.Node('loopvar', [p[1]], [])
+
+    def p_loopmetodo_ini(self,p):
+        """loopmetodo : metodo loopmetodo 
+                      |
+        """
+        p[0] = nd.Node('loopmetodo', [p[1]], [])
 
     #------------------------------FIM------------------------------#
 
