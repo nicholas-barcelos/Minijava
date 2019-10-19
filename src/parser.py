@@ -25,33 +25,30 @@ class Parser:
         'if' : 'IF',
         'else' : 'ELSE',
         'while' : 'WHILE',
-        'System.out.println' : 'SOUT',
         'length' : 'LENGTH',
         'true' : 'TRUE',
         'false' : 'FALSE',
         'this' : 'THIS',
         'new' : 'NEW',
         'null' : 'NULL',
+        'System.out.println' : 'SOUT'
     }
 
-    tokens = list(reserved.values) + [
-        'ID', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS',
-        'LPAREN','RPAREN', 'LSBRACKET', 'RSBRACKET',
-        'LCBRACKET', 'RCBRACKET', 'SEMICOLON', 'DOT', 'COMMA', 'LTHAN', 'GTHAN',
-        'LTHANEQ', 'GTHANEQ', 'NOTEQ', 'AND', 'NOT', 'ASSIGN'
-    ]
+    tokens = [
+        'ID', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'EQUALS','LPAREN','RPAREN', 
+        'LSBRACKET', 'RSBRACKET', 'LCBRACKET', 'RCBRACKET', 'SEMICOLON', 'DOT', 
+        'COMMA', 'LTHAN', 'GTHAN','LTHANEQ', 'GTHANEQ', 'NOTEQ', 'AND', 'NOT', 'ASSIGN'
+    ] + list(reserved.values())
 
     # Tokens
 
     t_PLUS       = r'\+'
     t_MINUS      = r'\-'
     t_TIMES      = r'\*'
-    t_DIVIDE     = r'\/'
     t_EQUALS     = r'\=\='
     t_ASSIGN     = r'\='
     t_LPAREN     = r'\('
     t_RPAREN     = r'\)'
-    t_ID         = r'[a-zA-Z][a-zA-Z0-9_]*'
     t_NUMBER     = r'[0-9]+'
     t_LSBRACKET  = r'\['
     t_RSBRACKET  = r'\]'
@@ -69,7 +66,12 @@ class Parser:
     t_NOT        = r'\!'
     
     # Ignored characters
-    t_ignore = r'\f|\t|\r'
+    t_ignore = " \t"
+
+    def t_ID(self,t):
+        r'System.out.println|[a-zA-Z][a-zA-Z_0-9]*'
+        t.type = self.reserved.get(t.value,'ID')    # Check for reserved words
+        return t
 
     def t_ccode_comment(self,t):
         r'(/\*(.|\n)*?\*/)|(//.*)'
@@ -89,7 +91,7 @@ class Parser:
     # Precedence rules for the arithmetic operators
     precedence = (
         ('left','PLUS','MINUS'),
-        ('left','TIMES','DIVIDE'),
+        ('left','TIMES'),
         ('right','UMINUS'),
     )
 
@@ -98,12 +100,12 @@ class Parser:
     #--------------PROG--------------#
     def p_prog_main(self, p):
         'prog : main loopclasse'
-        p[0] = nd.Node('prog0', [ p[1], p[3] ], [ p[2], p[4] ])
+        p[0] = nd.Node('prog0', [ p[1] ], [ ])
     
     #--------------MAIN--------------#
     def p_main_class(self,p):
         'main : CLASS ID LCBRACKET PUBLIC STATIC VOID MAIN LPAREN STRING LSBRACKET RSBRACKET ID RPAREN LCBRACKET cmd RCBRACKET RCBRACKET'
-        p[0] = nd.Node('main', [ p[15] ] , [ p[2], p[1], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[12], p[13], p[14], p[16], p[17] ])
+        p[0] = nd.Node('main', [ p[15] ] , [ p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[12], p[13], p[14], p[16], p[17] ])
     
     #--------------CLASSE--------------#
     def p_classe_id(self,p):
@@ -219,7 +221,7 @@ class Parser:
         p[0] = nd.Node('sexpnot', [ p[2] ], [ p[1] ])
     
     def p_sexp_minus(self, p):
-        'sexp : MINUS sexp'
+        'sexp : MINUS sexp %prec UMINUS'
         p[0] = nd.Node('sexpminus', [ p[2] ], [ p[1] ])
 
     def p_sexp_true(self, p):
@@ -289,55 +291,83 @@ class Parser:
         """optextends : EXTENDS ID
                       |
         """
-        p[0] = nd.Node('optextends', [], [ p[1], p[2] ])
+        if(len(p) > 1): # não é produção epsilon
+            p[0] = nd.Node('optextends', [], [ p[1], p[2] ])
+        else:
+            pass
 
     def p_optparams_part(self, p):
         """optparams : params
                      |
         """
-        p[0] = nd.Node('optparams', [ p[1] ], [])
+        if(len(p) > 1): # não é produção epsilon
+            p[0] = nd.Node('optparams', [ p[1] ], [])
+        else:
+            pass
 
     def p_optexps_part(self, p):
         """optexps : exps optexps
                    |
         """
-        p[0] = nd.Node('optparams', [ p[1] ], [])
+        if(len(p) > 1): # não é produção epsilon
+            p[0] = nd.Node('optparams', [ p[1] ], [])
+        else:
+            pass
+
     #--------------{LOOP}--------------#
     def p_loopvar_ini(self, p):
         """loopvar : var loopvar 
                    |
         """
-        p[0] = nd.Node('loopvar', [ p[1] ], [])
+        if(len(p) > 1): # não é produção epsilon
+            p[0] = nd.Node('loopvar', [ p[1] ], [])
+        else:
+            pass
 
     def p_loopmetodo_ini(self, p):
         """loopmetodo : metodo loopmetodo 
                       |
         """
-        p[0] = nd.Node('loopmetodo', [ p[1] ], [])
+        if(len(p) > 1): # não é produção epsilon
+            p[0] = nd.Node('loopmetodo', [ p[1] ], [])
+        else:
+            pass
 
     def p_loopclasse_ini(self, p):
         """loopclasse : classe loopclasse
                       |
         """
-        p[0] = nd.Node('loopclasse', [ p[1] ], [])
+        if(len(p) > 1): # não é produção epsilon
+            p[0] = nd.Node('loopclasse', [ p[1] ], [])
+        else:
+            pass
 
     def p_loopcmd_ini(self, p):
         """loopcmd : cmd loopcmd
                    |
         """
-        p[0] = nd.Node('loopcmd', [ p[1] ], [])
+        if(len(p) > 1): # não é produção epsilon
+            p[0] = nd.Node('loopcmd', [ p[1] ], [])
+        else:
+            pass
 
     def p_loopvirgulatipoid_ini(self, p):
         """loopvirgulatipoid : COMMA tipo ID loopvirgulatipoid
                              |
         """
-        p[0] = nd.Node('loopvirgulatipoid', [ p[2] ], [ p[1], p[2] ])
+        if(len(p) > 1): # não é produção epsilon
+            p[0] = nd.Node('loopvirgulatipoid', [ p[2] ], [ p[1], p[2] ])
+        else:
+            pass
     
     def p_loopvirgulaexp_ini(self, p):
         """loopvirgulaexp : COMMA exp loopvirgulaexp
                           |
         """
-        p[0] = nd.Node('loopvirgulatipoid', [ p[2] ], [ p[1] ])
+        if(len(p) > 1): # não é produção epsilon
+            p[0] = nd.Node('loopvirgulatipoid', [ p[2] ], [ p[1] ])
+        else:
+            pass
     #------------------------------FIM------------------------------#
 
     def p_error(self,p):
