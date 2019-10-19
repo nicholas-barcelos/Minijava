@@ -36,7 +36,7 @@ class Parser:
 
     tokens = list(reserved.values) + [
         'NAME', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS',
-        'LPAREN','RPAREN', 'COMENTLINE', 'COMENTMULT', 'LSBRACKET', 'RSBRACKET',
+        'LPAREN','RPAREN', 'LSBRACKET', 'RSBRACKET',
         'LCBRACKET', 'RCBRACKET', 'SEMICOLON', 'DOT', 'COMMA', 'LTHAN', 'GTHAN',
         'LTHANEQ', 'GTHANEQ', 'NOTEQ', 'AND', 'NOT'
     ]
@@ -52,8 +52,6 @@ class Parser:
     t_RPAREN     = r'\)'
     t_NAME       = r'[a-zA-Z][a-zA-Z0-9_]*'
     t_NUMBER     = r'[0-9]+'
-    t_COMENTLINE = r'\/\/\w*'
-    t_COMENTMULT = r'\/[\*]([^\*]|([\*][^/]))*[\*]\/'
     t_LSBRACKET  = r'\['
     t_RSBRACKET  = r'\]'
     t_LCBRACKET  = r'\{'
@@ -72,6 +70,10 @@ class Parser:
     # Ignored characters
     t_ignore = r'\f|\t|\r'
 
+    def t_ccode_comment(self,t):
+        r'(/\*(.|\n)*?\*/)|(//.*)'
+        pass
+
     def t_newline(self, t):
         r'\n+'
         t.lexer.lineno += t.value.count("\n")
@@ -80,60 +82,23 @@ class Parser:
         print("Illegal character '%s'" % t.value[0])
         t.lexer.skip(1)
 
+    #------------------------------------------------------------------------------#
+
     # Parser
     # Precedence rules for the arithmetic operators
     precedence = (
         ('left','PLUS','MINUS'),
         ('left','TIMES','DIVIDE'),
         ('right','UMINUS'),
-        )
+    )
 
-    # dictionary of names (for storing variables)
-    names = { 
-        
-    }
+    #------------------------------REGRAS GRAMATICAIS------------------------------#
+    def p_prog_main(self, p):
+        'prog : main LCBRACKET classe RCBRACKET'
+        p[0] = nd.Node('prog0', [p[1], p[3]], [p[2], p[4]])
 
-    def p_statement_assign(self,p):
-        'statement : NAME EQUALS expression'
-        # names[p[1]] = p[3]
-        p[0] = nd.Node("assign",[p[1],p[3]],p[2])
 
-    def p_statement_expr(self,p):
-        'statement : expression'
-        # print(p[1])
-        p[0] = nd.Node("expression",[p[1]])
-
-    def p_expression_binop(self,p):
-        '''expression : expression PLUS expression
-                      | expression MINUS expression
-                      | expression TIMES expression
-                      | expression DIVIDE expression'''
-        # if p[2] == '+'  : p[0] = p[1] + p[3]
-        # elif p[2] == '-': p[0] = p[1] - p[3]
-        # elif p[2] == '*': p[0] = p[1] * p[3]
-        # elif p[2] == '/': p[0] = p[1] / p[3]
-        p[0] = nd.Node("binop", [p[1],p[3]],[p[2]]) 
-
-    def p_expression_uminus(self,p):
-        'expression : MINUS expression %prec UMINUS'
-        p[0] = -p[2]
-
-    def p_expression_group(self,p):
-        'expression : LPAREN expression RPAREN'
-        # p[0] = p[2]
-        p[0] = nd.Node("group", [p[2]],[p[1],p[3]])
-
-    def p_expression_number(self,p):
-        'expression : NUMBER'
-        p[0] = p[1]
-
-    def p_expression_name(self,p):
-        'expression : NAME'
-        try:
-            p[0] = names[p[1]]
-        except LookupError:
-            print("Undefined name '%s'" % p[1])
-            p[0] = 0
+    #------------------------------FIM------------------------------#
 
     def p_error(self,p):
         print("Syntax error at '%s'" % p.value)
