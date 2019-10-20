@@ -86,8 +86,8 @@ class Parser:
         t.lexer.skip(1)
 
     #------------------------------------------------------------------------------#
+    #------------------------------Parser------------------------------#
 
-    # Parser
     # Precedence rules for the arithmetic operators
     precedence = (
         ('left','PLUS','MINUS'),
@@ -100,7 +100,7 @@ class Parser:
     #--------------PROG--------------#
     def p_prog_main(self, p):
         'prog : main loopclasse'
-        p[0] = nd.Node('prog0', [ p[1] ], [ ])
+        p[0] = nd.Node('prog0', [ p[1], p[2] ], [ ])
     
     #--------------MAIN--------------#
     def p_main_class(self,p):
@@ -151,27 +151,27 @@ class Parser:
 
     def p_cmd_if(self, p):
         'cmd : IF LPAREN exp RPAREN cmd'
-        p[0] = nd.Node('cmdid', [ p[3], p[5] ], [ p[1], p[2], p[4] ])
+        p[0] = nd.Node('cmdif', [ p[3], p[5] ], [ p[1], p[2], p[4] ])
 
     def p_cmd_ifelse(self, p):
         'cmd : IF LPAREN exp RPAREN cmd ELSE cmd'
-        p[0] = nd.Node('cmdid', [ p[3], p[5], p[7] ], [ p[1], p[2], p[4], p[6] ])
+        p[0] = nd.Node('cmdifelse', [ p[3], p[5], p[7] ], [ p[1], p[2], p[4], p[6] ])
 
     def p_cmd_while(self, p):
         'cmd : WHILE LPAREN exp RPAREN cmd'
-        p[0] = nd.Node('cmdid', [ p[3], p[5] ], [ p[1], p[2], p[4] ])
+        p[0] = nd.Node('cmdwhile', [ p[3], p[5] ], [ p[1], p[2], p[4] ])
 
     def p_cmd_sout(self, p):
         'cmd : SOUT LPAREN exp RPAREN SEMICOLON'
-        p[0] = nd.Node('cmdid', [ p[3] ], [ p[1], p[2], p[4], p[5] ])
+        p[0] = nd.Node('cmdsout', [ p[3] ], [ p[1], p[2], p[4], p[5] ])
 
     def p_cmd_ideq(self, p):
-        'cmd : ID ASSIGN exp'
-        p[0] = nd.Node('cmdideq', [ p[3] ], [ p[1], p[2] ])
+        'cmd : ID ASSIGN exp SEMICOLON'
+        p[0] = nd.Node('cmdideq', [ p[3] ], [ p[1], p[2], p[4] ])
     
     def p_cmd_id(self, p):
-        'cmd : ID LSBRACKET exp RSBRACKET ASSIGN exp'
-        p[0] = nd.Node('cmdid', [ p[3], p[6] ], [ p[1], p[2], p[4], p[5] ])
+        'cmd : ID LSBRACKET exp RSBRACKET ASSIGN exp SEMICOLON'
+        p[0] = nd.Node('cmdid', [ p[3], p[6] ], [ p[1], p[2], p[4], p[5],p[6] ])
 
     #--------------EXP--------------#
     def p_exp_exp(self, p):
@@ -188,6 +188,8 @@ class Parser:
                 | rexp GTHAN aexp
                 | rexp EQUALS aexp
                 | rexp NOTEQ aexp
+                | rexp LTHANEQ aexp
+                | rexp GTHANEQ aexp
         """
         p[0] = nd.Node('rexprexp', [ p[1], p[3] ], [ p[2] ])
 
@@ -279,7 +281,7 @@ class Parser:
 
     def p_pexp_pexplp(self, p):
         'pexp : pexp DOT ID LPAREN optexps RPAREN'
-        p[0] = nd.Node('pexppexplp', [ p[1] ], [ p[2], p[3] ])
+        p[0] = nd.Node('pexppexplp', [ p[1], p[5] ], [ p[2], p[3], p[4], p[6] ])
 
     #--------------EXPS--------------#
     def p_exps_exp(self, p):
@@ -294,7 +296,7 @@ class Parser:
         if(len(p) > 1): # não é produção epsilon
             p[0] = nd.Node('optextends', [], [ p[1], p[2] ])
         else:
-            pass
+            p[0] = nd.Node('optextends', [], [])
 
     def p_optparams_part(self, p):
         """optparams : params
@@ -303,71 +305,71 @@ class Parser:
         if(len(p) > 1): # não é produção epsilon
             p[0] = nd.Node('optparams', [ p[1] ], [])
         else:
-            pass
+            p[0] = nd.Node('optparams', [], [])
 
     def p_optexps_part(self, p):
-        """optexps : exps optexps
+        """optexps : exps
                    |
         """
         if(len(p) > 1): # não é produção epsilon
-            p[0] = nd.Node('optparams', [ p[1] ], [])
+            p[0] = nd.Node('optexps', [ p[1] ], [])
         else:
-            pass
+            p[0] = nd.Node('optexps', [], [])
 
     #--------------{LOOP}--------------#
     def p_loopvar_ini(self, p):
         """loopvar : var loopvar 
                    |
         """
-        if(len(p) > 1): # não é produção epsilon
-            p[0] = nd.Node('loopvar', [ p[1] ], [])
+        if(len(p) > 2): # é a primeira produção
+            p[0] = nd.Node('loopvar', [ p[1], p[2] ], [])
         else:
-            pass
+            p[0] = nd.Node('loopvar', [], [])
 
     def p_loopmetodo_ini(self, p):
         """loopmetodo : metodo loopmetodo 
                       |
         """
-        if(len(p) > 1): # não é produção epsilon
-            p[0] = nd.Node('loopmetodo', [ p[1] ], [])
+        if(len(p) > 2): # é a primeira produção
+            p[0] = nd.Node('loopmetodo', [ p[1], p[2] ], [])
         else:
-            pass
+            p[0] = nd.Node('loopmetodo', [], [])
 
     def p_loopclasse_ini(self, p):
         """loopclasse : classe loopclasse
                       |
         """
-        if(len(p) > 1): # não é produção epsilon
-            p[0] = nd.Node('loopclasse', [ p[1] ], [])
+        if(len(p) > 2): # é a primeira produção
+            p[0] = nd.Node('loopclasse', [ p[1], p[2] ], [])
         else:
-            pass
+            p[0] = nd.Node('loopclasse', [], [])
 
     def p_loopcmd_ini(self, p):
         """loopcmd : cmd loopcmd
-                   |
+                   | 
         """
-        if(len(p) > 1): # não é produção epsilon
-            p[0] = nd.Node('loopcmd', [ p[1] ], [])
+        if(len(p) > 2): # é a primeira produção
+            p[0] = nd.Node('loopcmd', [ p[1], p[2] ], [])
         else:
-            pass
+            p[0] = nd.Node('loopcmd', [], [])
 
     def p_loopvirgulatipoid_ini(self, p):
         """loopvirgulatipoid : COMMA tipo ID loopvirgulatipoid
                              |
         """
-        if(len(p) > 1): # não é produção epsilon
-            p[0] = nd.Node('loopvirgulatipoid', [ p[2] ], [ p[1], p[2] ])
+        if(len(p) > 2): # é a primeira produção
+            p[0] = nd.Node('loopvirgulatipoid', [ p[2], p[4] ], [ p[1], p[3] ])
         else:
-            pass
+            p[0] = nd.Node('loopvirgulatipoid', [], [])
     
     def p_loopvirgulaexp_ini(self, p):
         """loopvirgulaexp : COMMA exp loopvirgulaexp
                           |
         """
-        if(len(p) > 1): # não é produção epsilon
-            p[0] = nd.Node('loopvirgulatipoid', [ p[2] ], [ p[1] ])
+        if(len(p) > 2): # é a primeira produção
+            p[0] = nd.Node('loopvirgulatipoid', [ p[2], p[3] ], [ p[1] ])
         else:
-            pass
+            p[0] = nd.Node('loopvirgulatipoid', [], [])
     #------------------------------FIM------------------------------#
 
     def p_error(self,p):
