@@ -190,6 +190,50 @@ LOOPVIRGULAEXP      -> ',' EXP LOOPVIRGULAEXP
 
 ```
 
+## Palavras Reservadas
+
+A seguir a lista de palavras reservadas:
+
+```
+boolean, class, extends, public, static, void, main, String,
+return, int, if, else, while, length, true, false, this,
+new, null, System.out.println
+```
+
+## TOKENS
+
+A seguir, a lista de tokens e suas expressões regulares:
+
+```
+'ID'        : 'System.out.println|[a-zA-Z][a-zA-Z_0-9]*'
+'NUMBER'    : '[0-9]+'
+'PLUS'      : '\+'
+'MINUS'     : '\-'
+'TIMES'     : '\*'
+'EQUALS'    : '\=\='
+'LPAREN'    : '\('
+'RPAREN'    : '\)'
+'LSBRACKET' : '\['
+'RSBRACKET' : '\]'
+'LCBRACKET' : '\{'
+'RCBRACKET' : '\}'
+'SEMICOLON' : ';'
+'DOT'       : '\.'
+'COMMA'     : ','
+'LTHAN'     : '\<'
+'GTHAN'     : '\>'
+'LTHANEQ'   : '\<\='
+'GTHANEQ'   : '\>\='
+'NOTEQ'     : '\!\='
+'AND'       : '\&\&'
+'NOT'       : '\!'
+'ASSIGN'    : '\='
+```
+
+## Comentários
+
+A linguagem Minijava+ suporta comentários de uma linha, utilizando `\\` e comentários de múltiplas linhas utilizando `\**\`
+
 ## Referências
 - [Parser](https://www.dabeaz.com/ply/)
 - [Gramática](http://www.cead.uff.br/ead/mod/resource/view.php?id=41439)
