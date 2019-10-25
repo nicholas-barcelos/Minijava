@@ -100,7 +100,7 @@ class Parser:
     #--------------PROG--------------#
     def p_prog_main(self, p):
         'prog : main loopclasse'
-        p[0] = nd.Node('prog0', [ p[1], p[2] ], [ ])
+        p[0] = nd.Node('prog', [ p[1], p[2] ], [ ])
     
     #--------------MAIN--------------#
     def p_main_class(self,p):
@@ -130,57 +130,57 @@ class Parser:
     #--------------TIPO--------------#
     def p_tipo_inta(self, p):
         'tipo : INT LSBRACKET RSBRACKET'
-        p[0] = nd.Node('tipointa', [], [ p[1], p[2], p[3] ])
+        p[0] = nd.Node('tipo', [], [ p[1], p[2], p[3] ])
 
     def p_tipo_bool(self, p):
         'tipo : BOOLEAN'
-        p[0] = nd.Node('tipobool', [], [ p[1] ])
+        p[0] = nd.Node('tipo', [], [ p[1] ])
     
     def p_tipo_int(self, p):
         'tipo : INT'
-        p[0] = nd.Node('tipoint', [], [ p[1] ])
+        p[0] = nd.Node('tipo', [], [ p[1] ])
 
     def p_tipo_id(self, p):
         'tipo : ID'
-        p[0] = nd.Node('tipoid', [], [ p[1] ])
+        p[0] = nd.Node('tipo', [], [ p[1] ])
     
     #--------------CMD--------------#
     def p_cmd_chave(self, p):
         'cmd : LCBRACKET loopcmd RCBRACKET'
-        p[0] = nd.Node('cmdid', [ p[2] ], [ p[1], p[3] ])
+        p[0] = nd.Node('cmd', [ p[2] ], [ p[1], p[3] ])
 
     def p_cmd_if(self, p):
         'cmd : IF LPAREN exp RPAREN cmd'
-        p[0] = nd.Node('cmdif', [ p[3], p[5] ], [ p[1], p[2], p[4] ])
+        p[0] = nd.Node('cmd', [ p[3], p[5] ], [ p[1], p[2], p[4] ])
 
     def p_cmd_ifelse(self, p):
         'cmd : IF LPAREN exp RPAREN cmd ELSE cmd'
-        p[0] = nd.Node('cmdifelse', [ p[3], p[5], p[7] ], [ p[1], p[2], p[4], p[6] ])
+        p[0] = nd.Node('cmd', [ p[3], p[5], p[7] ], [ p[1], p[2], p[4], p[6] ])
 
     def p_cmd_while(self, p):
         'cmd : WHILE LPAREN exp RPAREN cmd'
-        p[0] = nd.Node('cmdwhile', [ p[3], p[5] ], [ p[1], p[2], p[4] ])
+        p[0] = nd.Node('cmd', [ p[3], p[5] ], [ p[1], p[2], p[4] ])
 
     def p_cmd_sout(self, p):
         'cmd : SOUT LPAREN exp RPAREN SEMICOLON'
-        p[0] = nd.Node('cmdsout', [ p[3] ], [ p[1], p[2], p[4], p[5] ])
+        p[0] = nd.Node('cmd', [ p[3] ], [ p[1], p[2], p[4], p[5] ])
 
     def p_cmd_ideq(self, p):
         'cmd : ID ASSIGN exp SEMICOLON'
-        p[0] = nd.Node('cmdideq', [ p[3] ], [ p[1], p[2], p[4] ])
+        p[0] = nd.Node('cmd', [ p[3] ], [ p[1], p[2], p[4] ])
     
     def p_cmd_id(self, p):
         'cmd : ID LSBRACKET exp RSBRACKET ASSIGN exp SEMICOLON'
-        p[0] = nd.Node('cmdid', [ p[3], p[6] ], [ p[1], p[2], p[4], p[5],p[6] ])
+        p[0] = nd.Node('cmd', [ p[3], p[6] ], [ p[1], p[2], p[4], p[5],p[6] ])
 
     #--------------EXP--------------#
     def p_exp_exp(self, p):
         'exp : exp AND rexp'
-        p[0] = nd.Node('expexp', [ p[1], p[3] ], [ p[2] ])
+        p[0] = nd.Node('exp', [ p[1], p[3] ], [ p[2] ])
 
     def p_exp_rexp(self, p):
         'exp : rexp'
-        p[0] = nd.Node('exprexp', [ p[1] ], [])
+        p[0] = nd.Node('exp', [ p[1] ], [])
 
     #--------------REXP--------------#
     def p_rexp_rexp(self, p):
@@ -191,102 +191,102 @@ class Parser:
                 | rexp LTHANEQ aexp
                 | rexp GTHANEQ aexp
         """
-        p[0] = nd.Node('rexprexp', [ p[1], p[3] ], [ p[2] ])
+        p[0] = nd.Node('rexp', [ p[1], p[3] ], [ p[2] ])
 
     def p_resp_aexp(self, p):
         'rexp : aexp'
-        p[0] = nd.Node('respaexp', [ p[1] ], [])
+        p[0] = nd.Node('rexp', [ p[1] ], [])
 
     #--------------AEXP--------------#
     def p_aexp_aexp(self, p):
         """aexp : aexp PLUS aexp
                 | aexp MINUS aexp
         """
-        p[0] = nd.Node('aexpaexp', [ p[1], p[3] ], [ p[2] ])
+        p[0] = nd.Node('aexp', [ p[1], p[3] ], [ p[2] ])
 
     def p_aexp_mexp(self, p):
         'aexp : mexp'
-        p[0] = nd.Node('aexpmexp', [ p[1] ], [])
+        p[0] = nd.Node('aexp', [ p[1] ], [])
     
     #--------------MEXP--------------#
     def p_mexp_mexp(self, p):
         'mexp : mexp TIMES mexp'
-        p[0] = nd.Node('mexpmexp', [ p[1], p[3] ], [ p[2] ])
+        p[0] = nd.Node('mexp', [ p[1], p[3] ], [ p[2] ])
 
     def p_mexp_sexp(self, p):
         'mexp : sexp'
-        p[0] = nd.Node('mexpsexp', [ p[1] ], [])
+        p[0] = nd.Node('mexp', [ p[1] ], [])
 
     #--------------SEXP--------------#
     def p_sexp_not(self, p):
         'sexp : NOT sexp'
-        p[0] = nd.Node('sexpnot', [ p[2] ], [ p[1] ])
+        p[0] = nd.Node('sexp', [ p[2] ], [ p[1] ])
     
     def p_sexp_minus(self, p):
         'sexp : MINUS sexp %prec UMINUS'
-        p[0] = nd.Node('sexpminus', [ p[2] ], [ p[1] ])
+        p[0] = nd.Node('sexp', [ p[2] ], [ p[1] ])
 
     def p_sexp_true(self, p):
         'sexp : TRUE'
-        p[0] = nd.Node('sexptrue', [  ], [ p[1] ])
+        p[0] = nd.Node('sexp', [  ], [ p[1] ])
 
     def p_sexp_false(self, p):
         'sexp : FALSE'
-        p[0] = nd.Node('sexpfalse', [  ], [ p[1] ])
+        p[0] = nd.Node('sexp', [  ], [ p[1] ])
 
     def p_sexp_number(self, p):
         'sexp : NUMBER'
-        p[0] = nd.Node('sexpnumber', [  ], [ p[1] ])
+        p[0] = nd.Node('sexp', [  ], [ p[1] ])
 
     def p_sexp_null(self, p):
         'sexp : NULL'
-        p[0] = nd.Node('sexpnull', [  ], [ p[1] ])
+        p[0] = nd.Node('sexp', [  ], [ p[1] ])
 
     def p_sexp_new(self, p):
         'sexp : NEW INT LSBRACKET exp RSBRACKET'
-        p[0] = nd.Node('sexpnew', [ p[4] ], [ p[1], p[2], p[3], p[5] ])
+        p[0] = nd.Node('sexp', [ p[4] ], [ p[1], p[2], p[3], p[5] ])
 
     def p_sexp_dot(self, p):
         'sexp : pexp DOT LENGTH'
-        p[0] = nd.Node('sexpdot', [ p[1] ], [ p[2], p[3] ])
+        p[0] = nd.Node('sexp', [ p[1] ], [ p[2], p[3] ])
 
     def p_sexp_lsb(self, p):
         'sexp : pexp LSBRACKET exp RSBRACKET'
-        p[0] = nd.Node('sexplsb', [ p[1], p[3] ], [ p[2], p[4] ])
+        p[0] = nd.Node('sexp', [ p[1], p[3] ], [ p[2], p[4] ])
 
     def p_sexp_pexp(self, p):
         'sexp : pexp'
-        p[0] = nd.Node('sexppexp', [ p[1] ], [  ])
+        p[0] = nd.Node('sexp', [ p[1] ], [  ])
 
     #--------------PEXP--------------#
     def p_pexp_id(self, p):
         'pexp : ID'
-        p[0] = nd.Node('pexpid', [  ], [ p[1] ])
+        p[0] = nd.Node('pexp', [  ], [ p[1] ])
 
     def p_pexp_this(self, p):
         'pexp : THIS'
-        p[0] = nd.Node('pexpthis', [  ], [ p[1] ])
+        p[0] = nd.Node('pexp', [  ], [ p[1] ])
 
     def p_pexp_new(self, p):
         'pexp : NEW ID LPAREN RPAREN'
-        p[0] = nd.Node('pexpnew', [  ], [ p[1], p[2], p[3], p[4] ])
+        p[0] = nd.Node('pexp', [  ], [ p[1], p[2], p[3], p[4] ])
 
     def p_pexp_lp(self, p):
         'pexp : LPAREN exp RPAREN'
-        p[0] = nd.Node('pexplp', [ p[2] ], [ p[1], p[3] ])
+        p[0] = nd.Node('pexp', [ p[2] ], [ p[1], p[3] ])
 
     def p_pexp_pexp(self, p):
         'pexp : pexp DOT ID'
-        p[0] = nd.Node('pexppexp', [ p[1] ], [ p[2], p[3] ])
+        p[0] = nd.Node('pexp', [ p[1] ], [ p[2], p[3] ])
 
     def p_pexp_pexplp(self, p):
         'pexp : pexp DOT ID LPAREN optexps RPAREN'
-        p[0] = nd.Node('pexppexplp', [ p[1], p[5] ], [ p[2], p[3], p[4], p[6] ])
+        p[0] = nd.Node('pexp', [ p[1], p[5] ], [ p[2], p[3], p[4], p[6] ])
 
     #--------------EXPS--------------#
     def p_exps_exp(self, p):
         'exps : exp loopvirgulaexp'
-        p[0] = nd.Node('expsexp', [ p[1], p[2] ], [])
+        p[0] = nd.Node('exps', [ p[1], p[2] ], [])
 
     #--------------[OPICIONAL]--------------#
     def p_optextends_part(self, p):
