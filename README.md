@@ -94,9 +94,100 @@ PEXP    -> id
 EXPS    -> EXP {, EXP}
 ```
 
-Contudo, esta linguagem possui ambiguidades que precisaram ser tratadas. A seguir a gramática reescrita:
+Contudo, para implementação desta linguagem, tivemos que adaptar a gramática. A seguir, a gramática reescrita:
 
 ```
+PROG                -> MAIN LOOPCLASSE
+
+MAIN                -> class id '{' public static void main '('String '['']' id ')''{' CMD '}' '}'
+
+CLASSE              -> class id OPTEXTENDS '{' LOOPVAR LOOPMETODO '}'
+
+VAR                 -> TIPO id ';'
+
+METODO              -> public TIPO id '(' OPTPARAMS ')' '{' LOOPVAR LOOPCMD RETURN EXP ';' '}'
+
+PARAMS              -> TIPO id LOOPVIRGULATIPOID
+
+TIPO                -> int '['']'
+                        | boolean
+                        | int
+                        | id
+
+CMD                 -> '{' LOOPCMD '}'
+                        | if '(' EXP ')' CMD
+                        | if '(' EXP ')' CMD else CMD
+                        | while '(' EXP ')' CMD
+                        | System.out.println '(' EXP ')' ;
+                        | id '=' EXP ;
+                        | id '[' EXP ']' '=' EXP ;
+
+EXP                 -> EXP and REXP
+                        | REXP
+
+REXP                -> REXP '<' AEXP
+                        | REXP '>' AEXP
+                        | REXP '==' AEXP
+                        | REXP '!=' AEXP
+                        | REXP '<=' AEXP
+                        | REXP '=>' AEXP
+                        | AEXP
+
+AEXP                -> AEXP '+' AEXP
+                        | AEXP '-' AEXP
+                        | MEXP
+
+MEXP                -> MEXP '*' MEXP
+                        | SEXP
+
+SEXP                -> '!' SEXP
+                        | '-' SEXP %prec UMINUS
+                        | true
+                        | false
+                        | NUMBER
+                        | null
+                        | new int '[' EXP ']'
+                        | PEXP . length
+                        | PEXP '[' EXP ']'
+                        | PEXP
+
+PEXP                -> id
+                        | this
+                        | new id '('')'
+                        | '(' EXP ')'
+                        | PEXP . id
+                        | PEXP . id '(' OPTEXPS ')'
+
+EXPS                -> EXP LOOPVIRGULAEXP
+
+OPTEXTENDS          -> extends id
+                        | ε
+
+OPTPARAMS           -> PARAMS
+                        | ε
+
+OPTEXPS             -> EXPS
+                        | ε
+
+LOOPVAR             -> var LOOPVAR
+                        | ε
+
+LOOPMETODO          -> METODO LOOPMETODO
+                        | ε
+
+LOOPCLASSE          -> CLASSE LOOPCLASSE
+                        | ε
+
+LOOPCMD             -> CMD LOOPCMD
+                        | ε
+
+LOOPVIRGULATIPOID   -> ',' TIPO id LOOPVIRGULATIPOID
+                        | ε
+
+LOOPVIRGULAEXP      -> ',' EXP LOOPVIRGULAEXP
+                        | ε
+
+
 ```
 
 ## Referências
