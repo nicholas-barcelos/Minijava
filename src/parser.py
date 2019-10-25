@@ -393,10 +393,10 @@ class Parser:
                   debugfile=self.debugfile,
                   tabmodule=self.tabmodule)
 
-    def run(self):
+    def run(self, intxt):
         try:
-            f = open("in.txt", "r")
-            s = f.read()
+            with open(intxt, "r") as f:
+                s = f.read()
             result = yacc.parse(s)
             return result
         except Exception as e:

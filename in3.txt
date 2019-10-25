@@ -1,0 +1,7 @@
+class sout{
+    public static void main(String[] a){
+        if(true){
+            System.out.println(10);
+        }
+    }
+}
