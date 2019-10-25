@@ -4,14 +4,14 @@ Trabalho da disciplina de compiladores 2019.2.
 
 ## Execução
 
-```python main.py```
+```python main.py in.txt```
 
 A entrada é lida do arquivo in.txt
 
 
 existe uma outra maneira de execurtar o programa caso tenha graphviz instalado
 
-```python main.py -g | dot -T png | display```
+```python main.py in.txt -g | dot -T png | display```
 
 como instalar o graphviz em distros baseadas em debian
 
