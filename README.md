@@ -24,7 +24,7 @@ Para instalar o graphviz em distros baseadas em debian
 
 A implementação do parser foi feita utilizando a linguagem Python com o auxílio da biblioteca Python Lex-Yacc ou PLY, desenvolvida com intuito educacional para ensino de compiladores.
 
-YACC usa uma técnica _bottom up_ chamada _LR Parsing_ ou _Shift-Reducing Parsing_. A análise _bottom up_ possui a vantagem de suportar gramáticas mais gerais. Por exemplo, recursão à esquerda e prefixos comuns não são problemáticos.
+YACC usa uma técnica _bottom up_ chamada _LALR Parsing_ ou _Shift-Reducing Parsing_. A análise _bottom up_ possui a vantagem de suportar gramáticas mais gerais. Por exemplo, recursão à esquerda e prefixos comuns não são problemáticos.
 
 Já a técnica _Shift-Reducing_ utiliza as ações _shift_ (em que se desloca o ponteiro para a direita) e _reduce_ (em que realiza uma redução, isto é, substituir uma cadeia de caracteres por sua regra gramatical). A tarefa do analisador _Shift-Reduce_ é encontrar a próxima redução a ser realizada em cada passo.
 
