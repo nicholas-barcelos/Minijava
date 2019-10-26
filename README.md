@@ -257,7 +257,7 @@ new, null, System.out.println
 A seguir, a lista de tokens e suas expressões regulares:
 
 ```
-'ID'        : 'System.out.println|[a-zA-Z][a-zA-Z_0-9]*'
+'ID'        : '[a-zA-Z][a-zA-Z_0-9]*'
 'NUMBER'    : '[0-9]+'
 'PLUS'      : '\+'
 'MINUS'     : '\-'
