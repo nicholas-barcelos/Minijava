@@ -16,6 +16,8 @@ Caso tenha graphviz instalado, pode-se executar da seguinte forma:
 python main.py in.txt -g | dot -T png | display
 ```
 
+Onde `-g` serve para desenhar a árvore utilizando o `graphviz` e a parte `dot -T png | display` coloca o desenho num arquivo .png temporário para facilitar a visualização da árvore.
+
 Para instalar o graphviz em distros baseadas em debian
 
 `sudo apt-get install graphviz`
@@ -72,7 +74,7 @@ A main inicia o programa lendo os argumentos de entrada que podem ser o arquivo 
 
 Cria-se, então, uma instância da classe `Parser` que contém a inicialização da bilioteca com a identificação dos arquivos que irão armazenar o log de debug e a tabela de símbolos gerada. E a execução do parser, no método `Parser#run` passando o arquivo de entrada como argumento.
 
-Este, por sua vez, irá fazer a leitura do arquivo e fechá-lo automática (por conta da declaração `with`) e enviar os resultados para o YACC.
+Este, por sua vez, irá fazer a leitura do arquivo e fechá-lo automaticamente (por conta da declaração `with`) e enviar os resultados para o YACC.
 
 Ao finalizar a análise, se verifica se a saída deve ser utilizando o `graphviz` ou apenas a saída textual que o `graphviz` utilizaria.
 
