@@ -24,9 +24,57 @@ Para instalar o graphviz em distros baseadas em debian
 
 A implementação do parser foi feita utilizando a linguagem Python com o auxílio da biblioteca Python Lex-Yacc ou PLY, desenvolvida com intuito educacional para ensino de compiladores.
 
-YACC usa uma técnica _bottom up_ chamada _LR Parsing_ ou _Shift-Reducing Parsing_.
+YACC usa uma técnica _bottom up_ chamada _LR Parsing_ ou _Shift-Reducing Parsing_. A análise _bottom up_ possui a vantagem de suportar gramáticas mais gerais. Por exemplo, recursão à esquerda e prefixos comuns não são problemáticos.
 
-Nesta biblioteca, cada regra gramatical é definida por uma função em Python que contém a especificação GLC.
+Já a técnica _Shift-Reducing_ utiliza as ações _shift_ (em que se desloca o ponteiro para a direita) e _reduce_ (em que realiza uma redução, isto é, substituir uma cadeia de caracteres por sua regra gramatical). A tarefa do analisador _Shift-Reduce_ é encontrar a próxima redução a ser realizada em cada passo.
+
+Em nossa implementação, no arquivo `parser.py`, pode-se encontrar duas partes bem específicas do código: o Lexer e o Parser.
+
+### Lexer
+
+Iniciamos por listar as palavras reservadas da linguagem e associá-las ao token correspondente. Em seguida, criamos uma lista tokens que une tanto as palavras não-reservadas quanto as reservadas.
+
+Os tokens de palavras não-reservadas são descritos por meio de expressões regulares. A biblioteca os reconhece por meio de variáveis e métodos iniciados com `t_`. Aqui há considerações a serem feitas:
+
+-  as palavras reservadas podem ser facilmente confundidas com um _identificador_ e, por isso, foi necessário um método para descrever o identificador para que descartássemos uma palavra reservada antes de identificá-la como um token;
+
+- Os blocos de comentários, definidos por `\\` (comentários de uma linha) e `\**\` (comentários de múltiplas linhas) devem ser ignorados durante o parsing, assim como linhas em branco. Um método foi criado para esta descrição e a utilização da variável `t_ignore`;
+
+- O número de linhas do código é contado pela quantidade de `new lines (\n)` encontrados;
+
+- O encontro de erros, isto é, palavras que não pertencem à linguagem especificada são comunicados e dada a continuidade da análise léxica.
+
+### Parser
+
+A seguir iniciamos a implementação do parser com a especificação da precedência dos operadores aritméticos. A biblioteca nos permite isso por meio da tupla `precendence` onde informamos da menor para a maior e o lado da associatividade.
+
+Numa análise posterior identificamos a falta de necessidade desta especificação pois a gramática em si já especificava essa precedência. Entretanto, não tivemos tempo hábil de teste e, por isso, decidimos por manter a especificação de precedência nesta versão.
+
+Continuamos por definir as regras gramaticais. A biblioteca reconhece as definições utilizadas no parser por meio de identificadores iniciados por `p_`.
+
+Cada regra gramatical é definida por uma função que contém a regra em GLC. Cada função desse tipo aceita um argumento `p` que contém a sequência dos valores de cada símbolo gramatical correspondente, como no exemplo a seguir:
+
+```
+def p_var_tipo(self, p):
+    'var : tipo ID SEMICOLON'
+    # ^     ^    ^    ^
+    # p[0] p[1] p[2] p[3]
+    p[0] = nd.Node('var', [ p[1]], [ p[2], p[3] ])
+```
+
+O valor em `p[0]` é utilizado para identificar o valor final da análise.
+
+Para finalizar a descrição do parser, resta explicar que há uma regra especificada para quando há erros de sintaxe e, para isso, utiliza-se o método `p_error`.
+
+### Visão Geral
+
+A main inicia o programa lendo os argumentos de entrada que podem ser o arquivo e a flag `-g` que permite gerar uma visualização da árvore de saída do parser utilizando a biblioteca `graphviz`.
+
+Cria-se, então, uma instância da classe `Parser` que contém a inicialização da bilioteca com a identificação dos arquivos que irão armazenar o log de debug e a tabela de símbolos gerada. E a execução do parser, no método `Parser#run` passando o arquivo de entrada como argumento.
+
+Este, por sua vez, irá fazer a leitura do arquivo e fechá-lo automática (por conta da declaração `with`) e enviar os resultados para o YACC.
+
+Ao finalizar a análise, se verifica se a saída deve ser utilizando o `graphviz` ou apenas a saída textual que o `graphviz` utilizaria.
 
 ## Sintaxe da Linguagem
 
@@ -94,7 +142,11 @@ PEXP    -> id
 EXPS    -> EXP {, EXP}
 ```
 
-Contudo, para implementação desta linguagem, tivemos que adaptar a gramática. A seguir, a gramática reescrita:
+Contudo, foi necessário adaptar a gramática para utilizar BNF, criando regras para as repetições e opcionais.
+
+A necessidade de utilizar uma gramática em BNF é uma limitação da biblioteca utilizada.
+
+A seguir, a gramática reescrita:
 
 ```
 PROG                -> MAIN LOOPCLASSE
@@ -228,11 +280,27 @@ A seguir, a lista de tokens e suas expressões regulares:
 'AND'       : '\&\&'
 'NOT'       : '\!'
 'ASSIGN'    : '\='
+'BOOLEAN'   : 'boolean'
+'CLASS'     : 'class'
+'EXTENDS'   : 'extends'
+'PUBLIC'    : 'public'
+'STATIC'    : 'static'
+'VOID'      : 'void'
+'MAIN'      : 'main'
+'STRING'    : 'String'
+'RETURN'    : 'return'
+'INT'       : 'int'
+'IF'        : 'if'
+'ELSE'      : 'else'
+'WHILE'     : 'while'
+'LENGTH'    : 'length'
+'TRUE'      : 'true'
+'FALSE'     : 'false'
+'THIS'      : 'this'
+'NEW'       : 'new'
+'NULL'      : 'null'
+'SOUT'      : 'System.out.println'
 ```
-
-## Comentários
-
-A linguagem Minijava+ suporta comentários de uma linha, utilizando `\\` e comentários de múltiplas linhas utilizando `\**\`
 
 ## Referências
 - [Parser](https://www.dabeaz.com/ply/)
