@@ -1,6 +1,6 @@
 import sys
 import argparse
-
+import src.cgen as cg
 import src.parser as pa
 import src.node as nd
 
@@ -18,6 +18,7 @@ def run():
         print(nd.tree_to_graphviz(tree))
     else:
         nd.print_tree(tree)
+    cg.gera_mips(tree)
 
 
 if __name__ == '__main__':
