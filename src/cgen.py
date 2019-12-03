@@ -1,5 +1,7 @@
 import src.node as nd
 
+global rexp_rexp_i = 0
+
 def gera_mips(tree): #passa arvore sintatica
     with open('out.txt', 'w') as out:
         string = cgen_prog_main(tree)
@@ -52,7 +54,12 @@ def cgen_var_tipo(var_tipo):
 #--------------METODO--------------#
 
 def cgen_metodo_public(metodo_public):
-    pass
+    string = "//Metodo_public"
+    string += cgen_loopvar_ini(classe_id.children[2])
+    string += cgen_loopcmd_ini(loopcmd_ini.children[3])
+    string += cgen_exp(loopcmd_ini.children[4])
+    string += "//EO_Metodo_public"
+    return string
 
 #--------------PARAMS--------------#
 
@@ -122,21 +129,151 @@ def cgen_cmd_id(cmd_id):
 
 #--------------EXP--------------#
 
+def cgen_exp(exp):
+    string = "//EXP"
+    if(len(exp.children) > 1):
+        string += cgen_exp_exp(exp)
+    else:
+        string += cgen_exp_rexp(exp)
+    string += "//EO_EXP"
+    return string
+
+
 def cgen_exp_exp(exp_exp):
-    pass
+    string = "//EXP_EXP"
+    str1 = cgen(exp_exp.children[0])
+    str2 = cgen(exp_rexp.children[1])
+    string += (
+        f"{str1}\n"
+        f"sw $a0 0($sp)\n"
+        f"addiu $sp $sp -4\n"
+        f"{str2}\n"
+        f"lw $t1 4($sp)\n"
+        f"and $a0 $t1 $a0\n"
+        f"addiu $sp $sp 4\n"
+    )
+    string += "//EO_EXP_EXP"
+    return string
 
 def cgen_exp_rexp(exp_rexp):
-    pass
+    string = "//EXP_REXP"
+    string += cgen_rexp(exp_rexp.children[0])
+    string += "//EO_EXP_REXP"
+    return string
 
 #--------------REXP--------------#
 
-def cgen_rexp_rexp(rexp_rexp):
-    pass
+def cgen_rexp(rexp):
+    string = "//Rexp"
+    if(len(rexp.children) > 1):
+        string += cgen_rexp_rexp(rexp)
+    else:
+        string += cgen_rexp_aexp(rexp)
+    string += "//EO_Rexp"
+    return string
 
-def cgen_resp_aexp(resp_aexp):
-    pass
+def cgen_rexp_rexp(rexp_rexp):
+    string = "//Rexp_Rexp"
+    str1 = cgen_rexp(rexp_rexp.children[0])
+    str2 = cgen_aexp(rexp_rexp.children[1])
+    if(rexp_rexp.leaf[0] == "<"):
+        string += (
+            f"{str1}\n"
+            f"sw $a0 0($sp)\n"
+            f"addiu $sp $sp -4\n"
+            f"{str2}\n"
+            f"lw $t1 4($sp)\n"
+            f"slt $a0 $t1 $a0\n"
+            f"addiu $sp $sp 4\n"
+        )
+    elif(rexp_rexp.leaf[0] == ">"):
+        string += (
+            f"{str1}\n"
+            f"sw $a0 0($sp)\n"
+            f"addiu $sp $sp -4\n"
+            f"{str2}\n"
+            f"lw $t1 4($sp)\n"
+            f"slt $a0 $a0 $t1\n"
+            f"addiu $sp $sp 4\n"
+        )
+    elif(rexp_rexp.leaf[0] == "=="):
+        string += (
+            f"{str1}\n"
+            f"sw $a0 0($sp)\n"
+            f"addiu $sp $sp -4\n"
+            f"{str2}\n"
+            f"lw $t1 4($sp)\n"
+            f"beq $a0 $t1 true{rexp_rexp_i}\n"
+            f"li $a0 0\n"
+            f"b eo_true{rexp_rexp_i}\n"
+            f"true{rexp_rexp_i}:\n"
+            f"li $a0 1\n"
+            f"eo_true{rexp_rexp_i}:\n"
+            f"addiu $sp $sp 4\n"
+        )
+        rexp_rexp_i += 1
+    elif(rexp_rexp.leaf[0] == "!="):
+        string += (
+            f"{str1}\n"
+            f"sw $a0 0($sp)\n"
+            f"addiu $sp $sp -4\n"
+            f"{str2}\n"
+            f"lw $t1 4($sp)\n"
+            f"bne $a0 $t1 true{rexp_rexp_i}\n"
+            f"li $a0 0\n"
+            f"b eo_true{rexp_rexp_i}\n"
+            f"true{rexp_rexp_i}:\n"
+            f"li $a0 1\n"
+            f"eo_true{rexp_rexp_i}:\n"
+            f"addiu $sp $sp 4\n"
+        )
+        rexp_rexp_i += 1
+    elif(rexp_rexp.leaf[0] == "<="):
+        string += (
+            f"{str1}\n"
+            f"sw $a0 0($sp)\n"
+            f"addiu $sp $sp -4\n"
+            f"{str2}\n"
+            f"lw $t1 4($sp)\n"
+            f"slt $a0 $a0 $t1\n"
+            f"beq $a0 $zero true{rexp_rexp_i}\n"
+            f"li $a0 0\n"
+            f"b eo_true{rexp_rexp_i}\n"
+            f"true{rexp_rexp_i}:\n"
+            f"li $a0 1\n"
+            f"eo_true{rexp_rexp_i}:\n"
+            f"addiu $sp $sp 4\n"
+        )
+        rexp_rexp_i += 1
+    elif(rexp_rexp.leaf[0] == ">="):
+        string += (
+            f"{str1}\n"
+            f"sw $a0 0($sp)\n"
+            f"addiu $sp $sp -4\n"
+            f"{str2}\n"
+            f"lw $t1 4($sp)\n"
+            f"slt $a0 $t1 $a0\n"
+            f"beq $a0 $zero true{rexp_rexp_i}\n"
+            f"li $a0 0\n"
+            f"b eo_true{rexp_rexp_i}\n"
+            f"true{rexp_rexp_i}:\n"
+            f"li $a0 1\n"
+            f"eo_true{rexp_rexp_i}:\n"
+            f"addiu $sp $sp 4\n"
+        )
+        rexp_rexp_i += 1
+    string += "//EO_Rexp_Rexp"
+    return string
+
+def cgen_rexp_aexp(resp_aexp):
+    string = "//Resp_aexp"
+    string += cgen_aexp(resp_aexp.children[0])
+    string += "//EO_Resp_aexp"
 
 #--------------AEXP--------------#
+
+def cgen_aexp(aexp):
+    pass
 
 def cgen_aexp_aexp(aexp_aexp):
     pass
@@ -146,6 +283,9 @@ def cgen_aexp_mexp(aexp_mexp):
 
 #--------------MEXP--------------#
 
+def cgen_mexp(mexp):
+    pass
+
 def cgen_mexp_mexp(mexp_mexp):
     pass
 
@@ -153,6 +293,9 @@ def cgen_mexp_sexp(mexp_sexp):
     pass
 
 #--------------SEXP--------------#
+
+def cgen_sexp(sexp):
+    pass
 
 def cgen_sexp_not(sexp_not):
     pass
@@ -185,6 +328,9 @@ def cgen_sexp_pexp(sexp_pexp):
     pass
 
 #--------------PEXP--------------#
+
+def cgen_pexp(pexp_id):
+    pass
 
 def cgen_pexp_id(pexp_id):
     pass

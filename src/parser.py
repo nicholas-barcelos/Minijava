@@ -193,7 +193,7 @@ class Parser:
         """
         p[0] = nd.Node('rexp', [ p[1], p[3] ], [ p[2] ])
 
-    def p_resp_aexp(self, p):
+    def p_rexp_aexp(self, p):
         'rexp : aexp'
         p[0] = nd.Node('rexp', [ p[1] ], [])
 
