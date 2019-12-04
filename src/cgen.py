@@ -1,6 +1,6 @@
 import src.node as nd
 
-global rexp_rexp_i = 0
+global beq_counter = 0
 
 def gera_mips(tree): #passa arvore sintatica
     with open('out.txt', 'w') as out:
@@ -107,16 +107,67 @@ def cgen_cmd(cmd):
     return string_ch1
 
 def cgen_cmd_chave(cmd_chave):
-    return ""
+    string = "//cmd_chave"
+    string += cgen_loopcmd_ini(loopcmd_ini.children[0])
+    string += "//EO_cmd_chave"
+    return string
 
 def cgen_cmd_if(cmd_if):
-    return ""
+    string = "//IF_ELSE"
+    cond = cgen_exp(cmd_ifelse.children[0])
+    str1 = cgen_exp(cmd_ifelse.children[1])
+    string += (
+        f"{cond}\n"
+        f"sw $a0 0($sp)\n"
+        f"addiu $sp $sp -4\n"
+        f"beq $a0 $zero false{beq_counter}\n"
+        f"{str1}\n"
+        f"false{beq_counter}:\n"
+        f"addiu $sp $sp 4\n"
+        )
+    beq_counter += 1
+    string += "//EO_IF_ELSE"
+    return string
 
 def cgen_cmd_ifelse(cmd_ifelse):
-    return ""
+    string = "//IF_ELSE"
+    cond = cgen_exp(cmd_ifelse.children[0])
+    str1 = cgen_cmd(cmd_ifelse.children[1])
+    str2 = cgen_cmd(cmd_ifelse.children[2])
+    string += (
+        f"{cond}\n"
+        f"sw $a0 0($sp)\n"
+        f"addiu $sp $sp -4\n"
+        f"bne $a0 $zero true{beq_counter}\n"
+        f"{str2}\n"
+        f"b eo_true{beq_counter}\n"
+        f"true{beq_counter}:\n"
+        f"{str1}\n"
+        f"eo_true{beq_counter}:\n"
+        f"addiu $sp $sp 4\n"
+        )
+    beq_counter += 1
+    string += "//EO_IF_ELSE"
+    return string
 
 def cgen_cmd_while(cmd_while):
-    return ""
+    string = "//IF_ELSE"
+    cond = cgen_exp(cmd_ifelse.children[0])
+    str1 = cgen_cmd(cmd_ifelse.children[1])
+    string += (
+        f"{cond}\n"
+        f"sw $a0 0($sp)\n"
+        f"addiu $sp $sp -4\n"
+        f"start{beq_counter}:\n"
+        f"beq $a0 $zero false{beq_counter}\n"
+        f"{str1}\n"
+        f"b start{beq_counter}\n"
+        f"false{beq_counter}:\n"
+        f"addiu $sp $sp 4\n"
+        )
+    beq_counter += 1
+    string += "//EO_IF_ELSE"
+    return string
 
 def cgen_cmd_sout(cmd_sout):
     return ""
@@ -203,15 +254,15 @@ def cgen_rexp_rexp(rexp_rexp):
             f"addiu $sp $sp -4\n"
             f"{str2}\n"
             f"lw $t1 4($sp)\n"
-            f"beq $a0 $t1 true{rexp_rexp_i}\n"
+            f"beq $a0 $t1 true{beq_counter}\n"
             f"li $a0 0\n"
-            f"b eo_true{rexp_rexp_i}\n"
-            f"true{rexp_rexp_i}:\n"
+            f"b eo_true{beq_counter}\n"
+            f"true{beq_counter}:\n"
             f"li $a0 1\n"
-            f"eo_true{rexp_rexp_i}:\n"
+            f"eo_true{beq_counter}:\n"
             f"addiu $sp $sp 4\n"
         )
-        rexp_rexp_i += 1
+        beq_counter += 1
     elif(rexp_rexp.leaf[0] == "!="):
         string += (
             f"{str1}\n"
@@ -219,15 +270,15 @@ def cgen_rexp_rexp(rexp_rexp):
             f"addiu $sp $sp -4\n"
             f"{str2}\n"
             f"lw $t1 4($sp)\n"
-            f"bne $a0 $t1 true{rexp_rexp_i}\n"
+            f"bne $a0 $t1 true{beq_counter}\n"
             f"li $a0 0\n"
-            f"b eo_true{rexp_rexp_i}\n"
-            f"true{rexp_rexp_i}:\n"
+            f"b eo_true{beq_counter}\n"
+            f"true{beq_counter}:\n"
             f"li $a0 1\n"
-            f"eo_true{rexp_rexp_i}:\n"
+            f"eo_true{beq_counter}:\n"
             f"addiu $sp $sp 4\n"
         )
-        rexp_rexp_i += 1
+        beq_counter += 1
     elif(rexp_rexp.leaf[0] == "<="):
         string += (
             f"{str1}\n"
@@ -236,15 +287,15 @@ def cgen_rexp_rexp(rexp_rexp):
             f"{str2}\n"
             f"lw $t1 4($sp)\n"
             f"slt $a0 $a0 $t1\n"
-            f"beq $a0 $zero true{rexp_rexp_i}\n"
+            f"beq $a0 $zero true{beq_counter}\n"
             f"li $a0 0\n"
-            f"b eo_true{rexp_rexp_i}\n"
-            f"true{rexp_rexp_i}:\n"
+            f"b eo_true{beq_counter}\n"
+            f"true{beq_counter}:\n"
             f"li $a0 1\n"
-            f"eo_true{rexp_rexp_i}:\n"
+            f"eo_true{beq_counter}:\n"
             f"addiu $sp $sp 4\n"
         )
-        rexp_rexp_i += 1
+        beq_counter += 1
     elif(rexp_rexp.leaf[0] == ">="):
         string += (
             f"{str1}\n"
@@ -253,15 +304,15 @@ def cgen_rexp_rexp(rexp_rexp):
             f"{str2}\n"
             f"lw $t1 4($sp)\n"
             f"slt $a0 $t1 $a0\n"
-            f"beq $a0 $zero true{rexp_rexp_i}\n"
+            f"beq $a0 $zero true{beq_counter}\n"
             f"li $a0 0\n"
-            f"b eo_true{rexp_rexp_i}\n"
-            f"true{rexp_rexp_i}:\n"
+            f"b eo_true{beq_counter}\n"
+            f"true{beq_counter}:\n"
             f"li $a0 1\n"
-            f"eo_true{rexp_rexp_i}:\n"
+            f"eo_true{beq_counter}:\n"
             f"addiu $sp $sp 4\n"
         )
-        rexp_rexp_i += 1
+        beq_counter += 1
     string += "//EO_Rexp_Rexp"
     return string
 
