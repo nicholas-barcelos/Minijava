@@ -273,47 +273,153 @@ def cgen_rexp_aexp(resp_aexp):
 #--------------AEXP--------------#
 
 def cgen_aexp(aexp):
-    pass
+    string = "//AEXP"
+    if(len(aexp.children) > 1):
+        string += cgen_aexp_aexp(aexp)
+    else:
+        string += cgen_aexp_mexp(aexp)
+    string += "//EO_AEXP"
+    return string
 
 def cgen_aexp_aexp(aexp_aexp):
-    pass
+    string = "//AEXP"
+    str1 += cgen_aexp(aexp_aexp.children[0])
+    str2 += cgen_aexp(aexp_aexp.children[1])
+    op = "add"
+    if(aexp_aexp.leaf[0] == "-"):
+        op = "sub"
+    string += (
+        f"{str1}\n"
+        f"sw $a0 0($sp)\n"
+        f"addiu $sp $sp -4\n"
+        f"{str2}\n"
+        f"lw $t1 4($sp)\n"
+        f"{op} $a0 $t1 $a0\n"
+        f"addiu $sp $sp 4\n"
+    )
+    string += "//EO_AEXP_AEXP"
+    return string
 
 def cgen_aexp_mexp(aexp_mexp):
-    pass
+    string = "//AEXP_MEXP"
+    string += cgen_mexp(aexp_mexp.children[0])
+    string += "//EO_AEXP_MEXP"
+    return string
 
 #--------------MEXP--------------#
 
 def cgen_mexp(mexp):
-    pass
+    string = "//MEXP"
+    if(len(mexp.children) > 1):
+        string += cgen_mexp_mexp(mexp)
+    else:
+        string += cgen_mexp_sexp(mexp)
+    string += "//EO_MEXP"
+    return string
 
 def cgen_mexp_mexp(mexp_mexp):
-    pass
+    string = "//MEXP"
+    str1 += cgen_mexp(mexp_mexp.children[0])
+    str2 += cgen_mexp(mexp_mexp.children[1])
+    op = "mul"
+    string += (
+        f"{str1}\n"
+        f"sw $a0 0($sp)\n"
+        f"addiu $sp $sp -4\n"
+        f"{str2}\n"
+        f"lw $t1 4($sp)\n"
+        f"{op} $a0 $t1 $a0\n"
+        f"addiu $sp $sp 4\n"
+    )
+    string += "//EO_MEXP_MEXP"
+    return string
 
 def cgen_mexp_sexp(mexp_sexp):
-    pass
+    string = "//MEXP_SEXP"
+    string += cgen_sexp(mexp_sexp.children[0])
+    string += "//EO_MEXP_SEXP"
+    return string
 
 #--------------SEXP--------------#
 
 def cgen_sexp(sexp):
-    pass
+    string = "//SEXP"
+    if(len(sexp.leaf) > 0):
+        if(sexp.leaf[0] == "!"):
+            string += cgen_sexp_not(sexp)
+        elif(sexp.leaf[0] == "-"):
+            string += cgen_sexp_minus(sexp)
+        elif(sexp.leaf[0].lower() == "true"):
+            string += cgen_sexp_true(sexp)
+        elif(sexp.leaf[0].lower() == "false"):
+            string += cgen_sexp_false(sexp)
+        elif(sexp.leaf[0].lower() == "new"):
+            string += cgen_sexp_new(sexp)
+        elif(sexp.leaf[0].lower() == "null"):
+            string += cgen_sexp_null(sexp)
+        elif(sexp.leaf[0] == "."):
+            string += cgen_sexp_dot(sexp)
+        elif(sexp.leaf[0] == "["):
+            string += cgen_sexp_lsb(sexp)
+        else:
+            string += cgen_sexp_number(sexp)
+    else:
+        string += cgen_pexp(sexp)
+    string += "//EO_SEXP"
+    return string
 
 def cgen_sexp_not(sexp_not):
-    pass
+    string = "//SEXP_NOT"
+    str1 = cgen_sexp(sexp_not.children[0])
+    string += (
+        f"{str1}\n"
+        f"nor $a0 $a0 $zero\n"
+    )
+    string += "//EO_SEXP_NOT"
+    return string
 
 def cgen_sexp_minus(sexp_minus):
-    pass
+    string = "//SEXP_minus"
+    str1 = cgen_sexp(sexp_minus.children[0])
+    string += (
+        f"{str1}\n"
+        f"neg $a0 $a0\n"
+    )
+    string += "//EO_SEXP_minus"
+    return string
 
 def cgen_sexp_true(sexp_true):
-    pass
+    string = "//SEXP_true"
+    string += (
+        f"li $a0 1\n"
+    )
+    string += "//EO_SEXP_true"
+    return string
 
 def cgen_sexp_false(sexp_false):
-    pass
+    string = "//SEXP_false"
+    string += (
+        f"li $a0 0\n"
+    )
+    string += "//EO_SEXP_false"
+    return string
 
 def cgen_sexp_number(sexp_number):
-    pass
+    string = "//SEXP_number"
+    num = int(sexp_number.children[0])
+    string += (
+        f"li $a0 {num}\n"
+    )
+    string += "//EO_SEXP_number"
+    return string
 
 def cgen_sexp_null(sexp_null):
-    pass
+    string = "//SEXP_null"
+    string += (
+        f"li $a0 0\n"
+    )
+    string += "//EO_SEXP_null"
+    return string
 
 def cgen_sexp_new(sexp_new):
     pass
@@ -325,7 +431,10 @@ def cgen_sexp_lsb(sexp_lsb):
     pass
 
 def cgen_sexp_pexp(sexp_pexp):
-    pass
+    string = "//SEXP_pexp"
+    string += cgen_pexp(sexp_pexp.children[0])
+    string += "//EO_SEXP_pexp"
+    return string
 
 #--------------PEXP--------------#
 
