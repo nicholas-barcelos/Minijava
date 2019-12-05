@@ -1,49 +1,15 @@
 class Factorial{
     public static void main(String[] a){
-        if ( a != null){
-            System.out.println(new Fac().ComputeFac(10, 3, menos));
-        }else{
-            System.out.println(new Fac().ComputeFic(10, 3, menos));
-        }
+        System.out.println(new Fac().ComputeFac(1));
     }
 }
-/*asjnajsnajsnasjnjasnajsn
-    pudim //sdsdsds  -asas
 
-*/
 class Fac{
-    public int ComputeFac(int num1, int num2, id tipo){
-        int result;
-        float rasult;
-        boolean rasant;
-        if(tipo == menos){
-            result = num1 - num2;
-        }else{
-            if(tipo == soma){
-                result = num1 + num2;
-            }else{
-                if(tipo == mult){
-                    result = num1 * num2;
-                }
-            }
+    public int ComputeFac(int num){
+        int[] result;
+        {
+            result[0] = new int[3];
         }
-        return result;
-    }
-
-    public int cumputeFic(){
-        return pudim;
-    }
-}
-
-class fuc{
-    public boolean k(boolean pessoa){
-        if(pessoa){
-            pessoa = false;
-        }else{
-            if(!pessoa){
-                pessoal = true;
-            }
-        }
-        return false;
+        return result[0];
     }
 }

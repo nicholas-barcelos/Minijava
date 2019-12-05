@@ -67,9 +67,9 @@ class Code:
 
     def cgen_metodo_public(self,metodo_public):
         string = "//Metodo_public"
-        string += self.cgen_loopvar_ini(classe_id.children[2])
-        string += self.cgen_loopcmd_ini(loopcmd_ini.children[3])
-        string += self.cgen_exp(loopcmd_ini.children[4])
+        string += self.cgen_loopvar_ini(metodo_public.children[2])
+        string += self.cgen_loopcmd_ini(metodo_public.children[3])
+        string += self.cgen_exp(metodo_public.children[4])
         string += "//EO_Metodo_public"
         return string
 
@@ -120,14 +120,14 @@ class Code:
 
     def cgen_cmd_chave(self,cmd_chave):
         string = "//cmd_chave"
-        string += self.cgen_loopcmd_ini(loopcmd_ini.children[0])
+        string += self.cgen_loopcmd_ini(cmd_chave.children[0])
         string += "//EO_cmd_chave"
         return string
 
     def cgen_cmd_if(self,cmd_if):
         string = "//IF_ELSE"
-        cond = self.cgen_exp(cmd_ifelse.children[0])
-        str1 = self.cgen_exp(cmd_ifelse.children[1])
+        cond = self.cgen_exp(cmd_if.children[0])
+        str1 = self.cgen_exp(cmd_if.children[1])
         string += (
             f"{cond}\n"
             f"sw $a0 0($sp)\n"

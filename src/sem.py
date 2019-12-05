@@ -36,16 +36,16 @@ class Semantic:
                 ):
                 vname = current_node.leaf[0]
                 if vname not in self.stab:
-                    raise Exception("Atribuição de variavel inexistente.")
+                    raise Exception(f"Atribuição de variavel {vname} inexistente.")
             # var[pos] = exp;
             elif(current_node.type == 'cmd' 
                     and len(current_node.leaf) > 3 
                     and current_node.leaf[3] == '='
                 ):
                 # ver como tratar posição de array na tabela
-                vname = current_node.leaf[1]
+                vname = current_node.leaf[0]
                 if vname not in self.stab:
-                    raise Exception("Atribuição de variavel inexistente.")
+                    raise Exception(f"Atribuição de variavel {vname} inexistente.")
 
             for child in current_node.children:            
                 self.make_table(child)
