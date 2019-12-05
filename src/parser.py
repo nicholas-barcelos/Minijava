@@ -171,7 +171,7 @@ class Parser:
     
     def p_cmd_id(self, p):
         'cmd : ID LSBRACKET exp RSBRACKET ASSIGN exp SEMICOLON'
-        p[0] = nd.Node('cmd', [ p[3], p[6] ], [ p[1], p[2], p[4], p[5],p[6] ])
+        p[0] = nd.Node('cmd', [ p[3], p[6] ], [ p[1], p[2], p[4], p[5], p[7] ])
 
     #--------------EXP--------------#
     def p_exp_exp(self, p):
