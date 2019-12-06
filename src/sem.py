@@ -47,11 +47,8 @@ class Semantic:
 
                 if self.stab[vname].vtype == 'array':
                     child = current_node.children[0]
-                    while child:
-                        if len(child.children) > 0:
-                            child = child.children[0]
-                        else:
-                            break
+                    while len(child.children) > 0:
+                        child = child.children[0]
                     arrlen = int(child.leaf[0])
 
                     if vname in self.stab:
@@ -70,15 +67,12 @@ class Semantic:
 
                 if self.stab[vname].vtype == 'array':
                     child = current_node.children[0]
-                    while child:
-                        if len(child.children) > 0:
-                            child = child.children[0]
-                        else:
-                            break
+                    while len(child.children) > 0:
+                        child = child.children[0]
                     pos = int(child.leaf[0])
 
                     if vname in self.stab:
-                        if (self.stab[vname].len is None 
+                        if (self.stab[vname].len is None
                             or self.stab[vname].len <= pos):
                             raise Exception(f"Atribuição de indíce fora de alcance da variavel \'{vname}\': {pos}.")
 

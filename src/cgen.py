@@ -196,13 +196,29 @@ class Code:
         string += (
             f"{str1}\n"
             f"la $t1 {var}\n"
-            f"sw $a0 0($t1)\n"
+            f"lw $a0 0($t1)\n"
         )
         string += "//EO_cmd_ideq"
         return string
 
     def cgen_cmd_id(self,cmd_id):
-        return ""
+        string = "//cmd_id"
+        var = cmd_ideq.leaf[0]
+        str1 = self.cgen_exp(cmd_ideq.children[1])
+
+        # pega posição do array desde que seja estática
+        child = cmd_id.children[0]
+        while len(child.children) > 1:
+            child = child.children[0]
+        pos = 4 * int(child.leaf[0])
+
+        string += (
+            f"{str1}\n"
+            f"la $t1 {var}\n"
+            f"lw $a0 {pos}($t1)\n"
+        )
+        string += "//EO_cmd_id"
+        return string
 
     #--------------EXP--------------#
 
@@ -499,13 +515,37 @@ class Code:
         return string
 
     def cgen_sexp_new(self,sexp_new):
-        pass
+        # inicialização do array é feito no gera_mips
+        return ""
 
     def cgen_sexp_dot(self,sexp_dot):
-        pass
+        string = "//sexp_dot"
+        var = sexp_dot.children[0].leaf[0]
+        arrlen = self.stab[var].len
+        string += (
+            f"li $a0 {arrlen}\n"
+        )
+        string += "//EO_sexp_dot"
+        return string
 
     def cgen_sexp_lsb(self,sexp_lsb):
-        pass
+        string = "//sexp_lsb"
+        var = sexp_lsb.children[0].leaf[0]
+
+        # pega posição do array desde que seja estática
+        child = sexp_lsb.children[1]
+        while True:
+            child = child.children[0]
+            if len(child.children[0]) < 1:
+                break
+        pos = 4 * int(child.leaf[0])
+
+        string += (
+            f"la $t1 {var}\n"
+            f"lw $a0 {pos}($t1)\n"
+        )
+        string += "//EO_sexp_lsb"
+        return string
 
     def cgen_sexp_pexp(self,sexp_pexp):
         string = "//SEXP_pexp"
@@ -519,21 +559,26 @@ class Code:
         pass
 
     def cgen_pexp_id(self,pexp_id):
-        pass
+        # feito no sexp
+        return ""
 
     def cgen_pexp_this(self,pexp_this):
-        pass
+        # feito no sexp ?
+        return ""
 
     def cgen_pexp_new(self,pexp_new):
+        # cgen da classe ?
         pass
 
     def cgen_pexp_lp(self,pexp_lp):
         pass
 
     def cgen_pexp_pexp(self,pexp_pexp):
+        # acessa var da classe ?
         pass
 
     def cgen_pexp_pexplp(self,pexp_pexplp):
+        # execução de método da classe
         pass
 
     #--------------EXPS--------------#
@@ -544,12 +589,15 @@ class Code:
     #--------------[OPICIONAL]--------------#
 
     def cgen_optextends_part(self,optextends_part):
+        # verificação de extenção
         pass
 
     def cgen_optparams_part(self,optparams_part):
+        # montagem dos params da def do método
         pass
 
     def cgen_optexps_part(self,optexps_part):
+        # verificação de arg da chamada do método
         pass
 
     #--------------{LOOP}--------------#
@@ -587,9 +635,11 @@ class Code:
         return string
 
     def cgen_loopvirgulatipoid_ini(self,loopvirgulatipoid_ini):
+        # verificação de param da def do método
         pass
 
     def cgen_loopvirgulaexp_ini(self,loopvirgulaexp_ini):
+        # verificação de arg da chamada do método
         pass
 
     #------------------------------FIM------------------------------#
