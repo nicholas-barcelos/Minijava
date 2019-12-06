@@ -42,19 +42,21 @@ class Semantic:
                 ):
                 vname = current_node.leaf[0]
 
-                child = current_node.children[0]
-                while child:
-                    if len(child.children) > 0:
-                        child = child.children[0]
-                    else:
-                        break
-                arrlen = child.leaf[0]
+                if vname not in self.stab:
+                    raise Exception(f"Atribuição de variavel \'{vname}\' inexistente.")
 
-                if vname in self.stab:
-                    if self.stab[vname].vtype == 'array':
-                        self.stab[vname].len = int(arrlen)
-                else:
-                    raise Exception(f"Atribuição de variavel {vname} inexistente.")
+                if self.stab[vname].vtype == 'array':
+                    child = current_node.children[0]
+                    while child:
+                        if len(child.children) > 0:
+                            child = child.children[0]
+                        else:
+                            break
+                    arrlen = int(child.leaf[0])
+
+                    if vname in self.stab:
+                        self.stab[vname].len = arrlen
+
             # var[pos] = exp;
             elif(current_node.type == 'cmd' 
                     and len(current_node.leaf) > 3 
@@ -62,8 +64,23 @@ class Semantic:
                 ):
                 # ver como tratar posição de array na tabela
                 vname = current_node.leaf[0]
+
                 if vname not in self.stab:
-                    raise Exception(f"Atribuição de variavel {vname} inexistente.")
+                    raise Exception(f"Atribuição de variavel \'{vname}\' inexistente.")
+
+                if self.stab[vname].vtype == 'array':
+                    child = current_node.children[0]
+                    while child:
+                        if len(child.children) > 0:
+                            child = child.children[0]
+                        else:
+                            break
+                    pos = int(child.leaf[0])
+
+                    if vname in self.stab:
+                        if (self.stab[vname].len is None 
+                            or self.stab[vname].len <= pos):
+                            raise Exception(f"Atribuição de indíce fora de alcance da variavel \'{vname}\': {pos}.")
 
             for child in current_node.children:            
                 self.make_table(child)

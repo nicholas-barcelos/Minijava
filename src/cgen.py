@@ -12,12 +12,7 @@ class Code:
             str1 = ""
             for vname in self.stab.keys():
                 if self.stab[vname].vtype == 'array':
-                    str1 += f"{vname}: .word "
-                    for i in range(self.stab[vname].len):
-                        if i != self.stab[vname].len - 1:
-                            str1 += f"0, "
-                        else:
-                            str1 += f"0\n"
+                    str1 += f"{vname} . word {', '.join(map(str, [0]*self.stab[vname].len))}\n"
                 else:
                     str1 += f"{vname}: .word 0\n"
             string = (

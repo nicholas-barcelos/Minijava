@@ -1,0 +1,51 @@
+class Cozinha{
+	public static void main(String[] a){
+ 		System.out.println(new Pudim().cook());
+	}
+}
+class Fac {
+	int acucar; //colher de sopa
+	int leite_condencado; // lata
+	int leite; //lata
+	int ovo; //unidade
+	public int cook(int acucar, int leite_condencado, int leite, int ovo ){
+		int tempo_banho_maria;
+		int temperatura;
+		int descanso;
+		int pudim;
+		tempo_banho_maria = 90;
+		temperatura = 180;
+		descanso = 120;
+		pudim = faz_calda(acucar) + prepara_massa(leite_condencado, leite, ovo) + tempo_banho_maria + temperatura;
+		while(descanso){
+			descanso = descanso - 1;
+		}
+	}
+
+	public int faz_calda(int acucar){
+		int fogo;
+		int tempo;
+		int forma;
+		fogo = 200;
+		tempo = 3;
+		calda = (fogo + acucar) * tempo;
+		return calda;
+	}
+
+	public int prepara_massa(int leite_condencado, int leite, int ovo){
+		int tempo_batendo;
+		int tempo_descansando;
+		int massa;
+		tempo_batendo = 1;
+		tempo_descansando = 15;
+		massa = leite + leite_condencado + ovo;
+		while(tempo_batendo){
+			tempo_batendo = tempo_batendo -1;
+		}
+		while(tempo_descansando){
+			tempo_descansando = tempo_descansando - 1;
+		}
+		return massa;
+	}
+
+}
