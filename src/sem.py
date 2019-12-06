@@ -1,12 +1,13 @@
 import src.node as nd
 
 class Symbol:
-    def __init__(self, vtype = None, prox = None):
-        self.type = vtype
+    def __init__(self, vtype = None, prox = None, len = None):
+        self.vtype = vtype
         self.prox = prox
+        self.len = len
 
     def __key(self):
-        return (self.type, self.prox)
+        return (self.vtype, self.prox, self.len)
 
     def __hash__(self):
         return hash(self.__key())
@@ -25,7 +26,12 @@ class Semantic:
             # tipo var;
             if current_node.type == 'var':
                 vname = current_node.leaf[0]
-                vtype = current_node.children[0].leaf[0]
+                vtype = None
+                if len(current_node.children[0].leaf) > 1:
+                    vtype = 'array'
+                else:
+                    vtype = current_node.children[0].leaf[0]
+                
                 if vname not in self.stab:
                     # verify scope can error
                     self.stab[vname] = Symbol(vtype=vtype)
@@ -35,7 +41,19 @@ class Semantic:
                     and current_node.leaf[1] == '='
                 ):
                 vname = current_node.leaf[0]
-                if vname not in self.stab:
+
+                child = current_node.children[0]
+                while child:
+                    if len(child.children) > 0:
+                        child = child.children[0]
+                    else:
+                        break
+                arrlen = child.leaf[0]
+
+                if vname in self.stab:
+                    if self.stab[vname].vtype == 'array':
+                        self.stab[vname].len = int(arrlen)
+                else:
                     raise Exception(f"Atribuição de variavel {vname} inexistente.")
             # var[pos] = exp;
             elif(current_node.type == 'cmd' 

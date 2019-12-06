@@ -1,4 +1,5 @@
 import src.node as nd
+import src.sem as sm
 
 class Code:
     def __init__(self,stab):
@@ -9,13 +10,22 @@ class Code:
     def gera_mips(self,tree): 
         with open('out.txt', 'w') as out:
             str1 = ""
-            for key in self.stab.keys():
-                str1 += f"{key} word 0\n"
+            for vname in self.stab.keys():
+                if self.stab[vname].vtype == 'array':
+                    str1 += f"{vname}: .word "
+                    for i in range(self.stab[vname].len):
+                        if i != self.stab[vname].len - 1:
+                            str1 += f"0, "
+                        else:
+                            str1 += f"0\n"
+                else:
+                    str1 += f"{vname}: .word 0\n"
             string = (
                 f".data\n"
                 f"{str1}"
                 f".text\n"
             )
+            print(f"header\n{string}")
             string += self.cgen_prog_main(tree)
             out.write(string)
 
