@@ -386,16 +386,16 @@ class Code:
 
     def cgen_aexp_aexp(self,aexp_aexp):
         string = ""
-        str1 += self.cgen_aexp(aexp_aexp.children[0])
-        str2 += self.cgen_aexp(aexp_aexp.children[1])
+        str1 = self.cgen_aexp(aexp_aexp.children[0])
+        str2 = self.cgen_aexp(aexp_aexp.children[1])
         op = "add"
         if(aexp_aexp.leaf[0] == "-"):
             op = "sub"
         string += (
-            f"{str1}\n"
+            f"{str1}"
             f"sw $a0, 0($sp)\n"
             f"addiu $sp, $sp, -4\n"
-            f"{str2}\n"
+            f"{str2}"
             f"lw $t1, 4($sp)\n"
             f"{op} $a0, $t1, $a0\n"
             f"addiu $sp, $sp, 4\n"
@@ -419,14 +419,14 @@ class Code:
 
     def cgen_mexp_mexp(self,mexp_mexp):
         string = ""
-        str1 += self.cgen_mexp(mexp_mexp.children[0])
-        str2 += self.cgen_mexp(mexp_mexp.children[1])
+        str1 = self.cgen_mexp(mexp_mexp.children[0])
+        str2 = self.cgen_mexp(mexp_mexp.children[1])
         op = "mul"
         string += (
-            f"{str1}\n"
+            f"{str1}"
             f"sw $a0, 0($sp)\n"
             f"addiu $sp, $sp, -4\n"
-            f"{str2}\n"
+            f"{str2}"
             f"lw $t1, 4($sp)\n"
             f"{op} $a0, $t1, $a0\n"
             f"addiu $sp, $sp, 4\n"
@@ -555,6 +555,9 @@ class Code:
         if (len(pexp.children[0].leaf) == 1 
             and pexp.children[0].leaf[0].lower() != "this"):
                 string += self.cgen_pexp_id(pexp.children[0])
+        if (len(pexp.children[0].leaf) == 2
+            and  pexp.children[0].leaf[0] == "("):
+                string += self.cgen_pexp_lp(pexp.children[0])
         return string
 
     def cgen_pexp_id(self,pexp_id):
@@ -574,7 +577,9 @@ class Code:
         return ""
 
     def cgen_pexp_lp(self,pexp_lp):
-        return ""
+        # print(f"pexplp: {pexp_lp.children[0].type}")
+        string = self.cgen_exp(pexp_lp.children[0])
+        return string
 
     def cgen_pexp_pexp(self,pexp_pexp):
         # acessa var da classe ?
