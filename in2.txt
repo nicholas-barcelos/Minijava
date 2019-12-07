@@ -11,9 +11,9 @@ class Fac{
         int a;
         {
             result = new int[3];
-            result[2] = 1;
+            result[2] = 5;
             a = result.length;
         }
-        return result[0];
+        return result[1];
     }
 }

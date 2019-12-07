@@ -13,16 +13,11 @@ main_entry:
   lw $fp, 0($sp)
   jr $ra
 
-
+li $a0, 5
 la $t1, result
-lw $a0, 0($t1)
-li $a0, 1
-
-la $t1, result
-lw $a0, 8($t1)
+sw $a0, 8($t1)
 li $a0, 3
-
 la $t1, a
-lw $a0, 0($t1)
+sw $a0, 0($t1)
 la $t1, result
-lw $a0, 0($t1)
+lw $a0, 4($t1)

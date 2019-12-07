@@ -187,11 +187,14 @@ class Code:
         string = ""
         var = cmd_ideq.leaf[0]
         str1 = self.cgen_exp(cmd_ideq.children[0])
-        string += (
-            f"{str1}\n"
-            f"la $t1, {var}\n"
-            f"lw $a0, 0($t1)\n"
-        )
+        if str1 == "":
+            return ""
+        else:
+            string += (
+                f"{str1}"
+                f"la $t1, {var}\n"
+                f"sw $a0, 0($t1)\n"
+            )
         return string
 
     def cgen_cmd_id(self,cmd_id):
@@ -201,15 +204,14 @@ class Code:
 
         # pega posição do array desde que seja estática
         child = cmd_id.children[0]
-        print("oro")
         while len(child.children) > 0:
             child = child.children[0]
         pos = 4 * int(child.leaf[0])
 
         string += (
-            f"{str1}\n"
+            f"{str1}"
             f"la $t1, {var}\n"
-            f"lw $a0, {pos}($t1)\n"
+            f"sw $a0, {pos}($t1)\n"
         )
         return string
 
