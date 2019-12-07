@@ -1,7 +1,4 @@
 .data
-result: .word 0, 0, 0
-bool: .word 0
-a: .word 0
 .text
 main_entry:
   move $fp, $sp
@@ -13,11 +10,30 @@ main_entry:
   lw $fp, 0($sp)
   jr $ra
 
-li $a0, 5
-la $t1, result
-sw $a0, 8($t1)
-li $a0, 3
-la $t1, a
-sw $a0, 0($t1)
-la $t1, result
-lw $a0, 4($t1)
+class_test:
+method_test1:
+move $fp, $sp
+sw $ra, 0($sp)
+addiu $sp, $sp, -4
+# cmds do metodo
+# retorno
+# prepara saida
+lw $ra, 4($sp)
+addiu $sp, $sp, 12
+lw $fp, 0($sp)
+jr $ra
+
+method_test2:
+move $fp, $sp
+sw $ra, 0($sp)
+addiu $sp, $sp, -4
+# cmds do metodo
+# retorno
+li $a0, 2
+# prepara saida
+lw $ra, 4($sp)
+addiu $sp, $sp, 12
+lw $fp, 0($sp)
+jr $ra
+
+end_program:

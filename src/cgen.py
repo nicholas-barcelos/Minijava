@@ -20,8 +20,8 @@ class Code:
                 f"{str1}"
                 f".text\n"
             )
-            print(f"header\n{string}")
             string += self.cgen_prog_main(tree)
+            string += "end_program:"
             out.write(string)
 
         #--------------PROG--------------#
@@ -57,7 +57,7 @@ class Code:
     #--------------CLASSE--------------#
 
     def cgen_classe_id(self,classe_id):
-        string = ""
+        string = f"class_{classe_id.leaf[1].lower()}:\n"
         string += self.cgen_loopvar_ini(classe_id.children[1])
         string += self.cgen_loopmetodo_ini(classe_id.children[2])
         return string
@@ -70,10 +70,25 @@ class Code:
     #--------------METODO--------------#
 
     def cgen_metodo_public(self,metodo_public):
-        string = ""
-        string += self.cgen_loopvar_ini(metodo_public.children[2])
-        string += self.cgen_loopcmd_ini(metodo_public.children[3])
-        string += self.cgen_exp(metodo_public.children[4])
+        # variável da classe já esta no .data
+        # vl += self.cgen_loopvar_ini(metodo_public.children[2])
+        cmds = self.cgen_loopcmd_ini(metodo_public.children[3])
+        ret = self.cgen_exp(metodo_public.children[4])
+        string = (
+            f"method_{metodo_public.leaf[1].lower()}:\n"
+            f"move $fp, $sp\n"
+            f"sw $ra, 0($sp)\n"
+            f"addiu $sp, $sp, -4\n"
+            f"# cmds do metodo\n"
+            f"{cmds}"
+            f"# retorno\n"
+            f"{ret}"
+            f"# prepara saida\n"
+            f"lw $ra, 4($sp)\n"
+            f"addiu $sp, $sp, 12\n"
+            f"lw $fp, 0($sp)\n"
+            f"jr $ra\n\n"
+        )
         return string
 
     #--------------PARAMS--------------#
@@ -530,7 +545,7 @@ class Code:
     #--------------PEXP--------------#
 
     def cgen_pexp(self,pexp_id):
-        pass
+        return ""
 
     def cgen_pexp_id(self,pexp_id):
         # feito no sexp
@@ -542,18 +557,18 @@ class Code:
 
     def cgen_pexp_new(self,pexp_new):
         # cgen da classe ?
-        pass
+        return ""
 
     def cgen_pexp_lp(self,pexp_lp):
-        pass
+        return ""
 
     def cgen_pexp_pexp(self,pexp_pexp):
         # acessa var da classe ?
-        pass
+        return ""
 
     def cgen_pexp_pexplp(self,pexp_pexplp):
         # execução de método da classe
-        pass
+        return ""
 
     #--------------EXPS--------------#
 
