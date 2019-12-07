@@ -5,18 +5,26 @@ a: .word 0
 b: .word 0
 c: .word 0
 .text
-main_entry:
-  move $fp, $sp
-  sw $ra, 0($sp)
-  addiu $sp, $sp, -4
-  
-  lw $ra, 4($sp)
-  addiu $sp, $sp, 12
-  lw $fp, 0($sp)
-  jr $ra
+exe_main:
+  #sout
+exe_computefac:
+sw $fp, 0($sp)
+addiu $sp, $sp, -4
+li $a0, 9
+sw $a0, 0($sp)
+addiu $sp, $sp, -4
+li $a0, 8
+sw $a0, 0($sp)
+addiu $sp, $sp, -4
+li $a0, 7
+sw $a0, 0($sp)
+addiu $sp, $sp, -4
+jal def_computefac
+# eo_sout
+  b end_program
 
 class_fac:
-method_computefac:
+def_computefac:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4

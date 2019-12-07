@@ -45,16 +45,11 @@ class Code:
         if(main_class.children[0] is not None):
             string_ch1 += self.cgen_cmd(main_class.children[0])
 
+        # main por enquanto não avalia o args
         string = (
-            f"main_entry:\n"
-            f"  move $fp, $sp\n"
-            f"  sw $ra, 0($sp)\n"
-            f"  addiu $sp, $sp, -4\n"
-            f"  {string_ch1}\n"
-            f"  lw $ra, 4($sp)\n"
-            f"  addiu $sp, $sp, 12\n"
-            f"  lw $fp, 0($sp)\n"
-            f"  jr $ra\n"
+            f"exe_main:\n"
+            f"  {string_ch1}"
+            f"  b end_program\n"
         )
         return string
 
@@ -81,7 +76,7 @@ class Code:
         cmds = self.cgen_loopcmd_ini(metodo_public.children[3])
         ret = self.cgen_exp(metodo_public.children[4])
         string = (
-            f"method_{metodo_public.leaf[1].lower()}:\n"
+            f"def_{metodo_public.leaf[1].lower()}:\n"
             f"move $fp, $sp\n"
             f"sw $ra, 0($sp)\n"
             f"addiu $sp, $sp, -4\n"
@@ -202,7 +197,13 @@ class Code:
         return string
 
     def cgen_cmd_sout(self,cmd_sout):
-        return ""
+        exp = self.cgen_exp(cmd_sout.children[0])
+        string = (
+            f"#sout\n"
+            f"{exp}"
+            f"# eo_sout\n"
+        )
+        return string
 
     def cgen_cmd_ideq(self,cmd_ideq):
         string = ""
@@ -564,6 +565,10 @@ class Code:
             and pexp.children[0].leaf[0] != "("):
             string += self.cgen_pexp_pexp(pexp.children[0])
 
+        elif (len(pexp.children[0].leaf) == 4
+            and pexp.children[0].leaf[0].lower() != "new"):
+            string += self.cgen_pexp_pexplp(pexp.children[0])
+
         return string
 
     def cgen_pexp_id(self,pexp_id):
@@ -599,12 +604,34 @@ class Code:
 
     def cgen_pexp_pexplp(self,pexp_pexplp):
         # execução de método da classe
-        return ""
+        vname = pexp_pexplp.leaf[1]
+        paramlen = self.stab[vname].paramlen
+        params = self.stab[vname].params
+        optexps = self.cgen_optexps_part(pexp_pexplp.children[1])
+        string = (
+            f"exe_{vname.lower()}:\n"
+            f"sw $fp, 0($sp)\n"
+            f"addiu $sp, $sp, -4\n"
+            f"{optexps}"
+            f"jal def_{vname.lower()}\n"
+        )
+        for k in sorted(params.keys(), reverse=True):
+            print("kek ",k)
+            
+        return string
 
     #--------------EXPS--------------#
 
     def cgen_exps_exp(self,exps_exp):
-        pass
+        exp = self.cgen_exp(exps_exp.children[0])
+        loopvirg = self.cgen_loopvirgulaexp_ini(exps_exp.children[1])
+        string = (
+            f"{loopvirg}"
+            f"{exp}"
+            f"sw $a0, 0($sp)\n"
+            f"addiu $sp, $sp, -4\n"
+        )
+        return string
 
     #--------------[OPICIONAL]--------------#
 
@@ -619,7 +646,10 @@ class Code:
 
     def cgen_optexps_part(self,optexps_part):
         # verificação de arg da chamada do método
-        pass
+        string = ""
+        if len(optexps_part.children) > 0:
+            string += self.cgen_exps_exp(optexps_part.children[0])
+        return string
 
     #--------------{LOOP}--------------#
 
@@ -659,7 +689,17 @@ class Code:
 
     def cgen_loopvirgulaexp_ini(self,loopvirgulaexp_ini):
         # verificação de arg da chamada do método
-        pass
+        string = ""
+        if len(loopvirgulaexp_ini.children) > 0:
+            exp = self.cgen_exp(loopvirgulaexp_ini.children[0])
+            loopvirg = self.cgen_loopvirgulaexp_ini(loopvirgulaexp_ini.children[1])
+            string = (
+                f"{loopvirg}"
+                f"{exp}"
+                f"sw $a0, 0($sp)\n"
+                f"addiu $sp, $sp, -4\n"
+            )
+        return string
 
     #------------------------------FIM------------------------------#
 

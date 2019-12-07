@@ -1,11 +1,12 @@
 import src.node as nd
 
 class Symbol:
-    def __init__(self, vtype = None, prox = None, len = None, paramlen = None):
+    def __init__(self, vtype = None, prox = None, len = None, params = None, paramlen = None):
         self.vtype = vtype
         self.prox = prox
         self.len = len
         self.paramlen = paramlen
+        self.params = params
 
     def __key(self):
         return (self.vtype, self.prox, self.len)
@@ -79,15 +80,24 @@ class Semantic:
             elif current_node.type == 'metodo':
                 vtype = current_node.children[0].leaf[0]
                 vname = current_node.leaf[1]
-                params = 0
+                paramlen = 0
+                params = dict()
                 child = current_node.children[1] # optparams
                 if len(child.children) > 0:
                     child = child.children[0] # params
+                    ptype = child.children[0].leaf[0]
+                    pname = child.leaf[0]
+                    params[pname] = Symbol(vtype=ptype)
                     # loopvirgulatipoid
                     while len(child.children) > 1:
                         child = child.children[1]
-                        params += 1
-                self.stab[vname] = Symbol(vtype=vtype,paramlen=params)
+                        if len(child.leaf) > 0:
+                            ptype = child.children[0].leaf[0]
+                            pname = child.leaf[1]
+                            params[pname] = Symbol(vtype=ptype)
+                        paramlen += 1
+
+                self.stab[vname] = Symbol(vtype=vtype,params=params,paramlen=paramlen)
             # prossegue a montagem
             for child in current_node.children:            
                 self.make_table(child)
