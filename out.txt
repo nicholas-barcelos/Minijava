@@ -4,25 +4,25 @@ bool: .word 0
 a: .word 0
 .text
 main_entry:
-  move $fp $sp
-  sw $ra 0($sp)
-  addiu $sp $sp -4
+  move $fp, $sp
+  sw $ra, 0($sp)
+  addiu $sp, $sp, -4
   
-  lw $ra 4($sp)
-  addiu $sp $sp 12
-  lw $fp 0($sp)
+  lw $ra, 4($sp)
+  addiu $sp, $sp, 12
+  lw $fp, 0($sp)
   jr $ra
 
 
-la $t1 result
-lw $a0 0($t1)
-li $a0 1
+la $t1, result
+lw $a0, 0($t1)
+li $a0, 1
 
-la $t1 result
-lw $a0 8($t1)
-li $a0 3
+la $t1, result
+lw $a0, 8($t1)
+li $a0, 3
 
-la $t1 a
-lw $a0 0($t1)
-la $t1 result
-lw $a0 0($t1)
+la $t1, a
+lw $a0, 0($t1)
+la $t1, result
+lw $a0, 0($t1)

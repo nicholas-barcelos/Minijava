@@ -43,13 +43,13 @@ class Code:
 
         string = (
             f"main_entry:\n"
-            f"  move $fp $sp\n"
-            f"  sw $ra 0($sp)\n"
-            f"  addiu $sp $sp -4\n"
+            f"  move $fp, $sp\n"
+            f"  sw $ra, 0($sp)\n"
+            f"  addiu $sp, $sp, -4\n"
             f"  {string_ch1}\n"
-            f"  lw $ra 4($sp)\n"
-            f"  addiu $sp $sp 12\n"
-            f"  lw $fp 0($sp)\n"
+            f"  lw $ra, 4($sp)\n"
+            f"  addiu $sp, $sp, 12\n"
+            f"  lw $fp, 0($sp)\n"
             f"  jr $ra\n"
         )
         return string
@@ -60,7 +60,6 @@ class Code:
         string = ""
         string += self.cgen_loopvar_ini(classe_id.children[1])
         string += self.cgen_loopmetodo_ini(classe_id.children[2])
-        string += ""
         return string
 
     #--------------VAR--------------#
@@ -75,7 +74,6 @@ class Code:
         string += self.cgen_loopvar_ini(metodo_public.children[2])
         string += self.cgen_loopcmd_ini(metodo_public.children[3])
         string += self.cgen_exp(metodo_public.children[4])
-        string += ""
         return string
 
     #--------------PARAMS--------------#
@@ -126,7 +124,6 @@ class Code:
     def cgen_cmd_chave(self,cmd_chave):
         string = ""
         string += self.cgen_loopcmd_ini(cmd_chave.children[0])
-        string += ""
         return string
 
     def cgen_cmd_if(self,cmd_if):
@@ -135,15 +132,14 @@ class Code:
         str1 = self.cgen_exp(cmd_if.children[1])
         string += (
             f"{cond}\n"
-            f"sw $a0 0($sp)\n"
-            f"addiu $sp $sp -4\n"
-            f"beq $a0 $zero false{self.beq_counter}\n"
+            f"sw $a0, 0($sp)\n"
+            f"addiu $sp, $sp, -4\n"
+            f"beq $a0, $zero, false{self.beq_counter}\n"
             f"{str1}\n"
             f"false{self.beq_counter}:\n"
-            f"addiu $sp $sp 4\n"
+            f"addiu $sp, $sp, 4\n"
             )
         self.beq_counter += 1
-        string += ""
         return string
 
     def cgen_cmd_ifelse(self,cmd_ifelse):
@@ -153,18 +149,17 @@ class Code:
         str2 = self.cgen_cmd(cmd_ifelse.children[2])
         string += (
             f"{cond}\n"
-            f"sw $a0 0($sp)\n"
-            f"addiu $sp $sp -4\n"
-            f"bne $a0 $zero true{self.beq_counter}\n"
+            f"sw $a0, 0($sp)\n"
+            f"addiu $sp, $sp, -4\n"
+            f"bne $a0, $zero, true{self.beq_counter}\n"
             f"{str2}\n"
             f"b eo_true{self.beq_counter}\n"
             f"true{self.beq_counter}:\n"
             f"{str1}\n"
             f"eo_true{self.beq_counter}:\n"
-            f"addiu $sp $sp 4\n"
+            f"addiu $sp, $sp, 4\n"
             )
         self.beq_counter += 1
-        string += ""
         return string
 
     def cgen_cmd_while(self,cmd_while):
@@ -173,17 +168,16 @@ class Code:
         str1 = self.cgen_cmd(cmd_ifelse.children[1])
         string += (
             f"{cond}\n"
-            f"sw $a0 0($sp)\n"
-            f"addiu $sp $sp -4\n"
+            f"sw $a0, 0($sp)\n"
+            f"addiu $sp, $sp, -4\n"
             f"start{self.beq_counter}:\n"
-            f"beq $a0 $zero false{self.beq_counter}\n"
+            f"beq $a0, $zero, false{self.beq_counter}\n"
             f"{str1}\n"
             f"b start{self.beq_counter}\n"
             f"false{self.beq_counter}:\n"
-            f"addiu $sp $sp 4\n"
+            f"addiu $sp, $sp, 4\n"
             )
         self.beq_counter += 1
-        string += ""
         return string
 
     def cgen_cmd_sout(self,cmd_sout):
@@ -195,10 +189,9 @@ class Code:
         str1 = self.cgen_exp(cmd_ideq.children[0])
         string += (
             f"{str1}\n"
-            f"la $t1 {var}\n"
-            f"lw $a0 0($t1)\n"
+            f"la $t1, {var}\n"
+            f"lw $a0, 0($t1)\n"
         )
-        string += ""
         return string
 
     def cgen_cmd_id(self,cmd_id):
@@ -215,10 +208,9 @@ class Code:
 
         string += (
             f"{str1}\n"
-            f"la $t1 {var}\n"
-            f"lw $a0 {pos}($t1)\n"
+            f"la $t1, {var}\n"
+            f"lw $a0, {pos}($t1)\n"
         )
-        string += ""
         return string
 
     #--------------EXP--------------#
@@ -229,7 +221,6 @@ class Code:
             string += self.cgen_exp_exp(exp)
         else:
             string += self.cgen_exp_rexp(exp)
-        string += ""
         return string
 
 
@@ -239,20 +230,18 @@ class Code:
         str2 = cgen(exp_rexp.children[1])
         string += (
             f"{str1}\n"
-            f"sw $a0 0($sp)\n"
-            f"addiu $sp $sp -4\n"
+            f"sw $a0, 0($sp)\n"
+            f"addiu $sp, $sp, -4\n"
             f"{str2}\n"
-            f"lw $t1 4($sp)\n"
-            f"and $a0 $t1 $a0\n"
-            f"addiu $sp $sp 4\n"
+            f"lw $t1, 4($sp)\n"
+            f"and $a0, $t1, $a0\n"
+            f"addiu $sp, $sp, 4\n"
         )
-        string += ""
         return string
 
     def cgen_exp_rexp(self,exp_rexp):
         string = ""
         string += self.cgen_rexp(exp_rexp.children[0])
-        string += ""
         return string
 
     #--------------REXP--------------#
@@ -263,7 +252,6 @@ class Code:
             string += self.cgen_rexp_rexp(rexp)
         else:
             string += self.cgen_rexp_aexp(rexp)
-        string += ""
         return string
 
     def cgen_rexp_rexp(self,rexp_rexp):
@@ -273,96 +261,94 @@ class Code:
         if(rexp_rexp.leaf[0] == "<"):
             string += (
                 f"{str1}\n"
-                f"sw $a0 0($sp)\n"
-                f"addiu $sp $sp -4\n"
+                f"sw $a0, 0($sp)\n"
+                f"addiu $sp, $sp, -4\n"
                 f"{str2}\n"
-                f"lw $t1 4($sp)\n"
-                f"slt $a0 $t1 $a0\n"
-                f"addiu $sp $sp 4\n"
+                f"lw $t1, 4($sp)\n"
+                f"slt $a0, $t1, $a0\n"
+                f"addiu $sp, $sp, 4\n"
             )
         elif(rexp_rexp.leaf[0] == ">"):
             string += (
                 f"{str1}\n"
-                f"sw $a0 0($sp)\n"
-                f"addiu $sp $sp -4\n"
+                f"sw $a0, 0($sp)\n"
+                f"addiu $sp, $sp, -4\n"
                 f"{str2}\n"
-                f"lw $t1 4($sp)\n"
-                f"slt $a0 $a0 $t1\n"
-                f"addiu $sp $sp 4\n"
+                f"lw $t1, 4($sp)\n"
+                f"slt $a0, $a0, $t1\n"
+                f"addiu $sp, $sp, 4\n"
             )
         elif(rexp_rexp.leaf[0] == "=="):
             string += (
                 f"{str1}\n"
-                f"sw $a0 0($sp)\n"
-                f"addiu $sp $sp -4\n"
+                f"sw $a0, 0($sp)\n"
+                f"addiu $sp, $sp, -4\n"
                 f"{str2}\n"
-                f"lw $t1 4($sp)\n"
-                f"beq $a0 $t1 true{self.beq_counter}\n"
-                f"li $a0 0\n"
+                f"lw $t1, 4($sp)\n"
+                f"beq $a0, $t1, true{self.beq_counter}\n"
+                f"li $a0, 0\n"
                 f"b eo_true{self.beq_counter}\n"
                 f"true{self.beq_counter}:\n"
-                f"li $a0 1\n"
+                f"li $a0, 1\n"
                 f"eo_true{self.beq_counter}:\n"
-                f"addiu $sp $sp 4\n"
+                f"addiu $sp, $sp, 4\n"
             )
             self.beq_counter += 1
         elif(rexp_rexp.leaf[0] == "!="):
             string += (
                 f"{str1}\n"
-                f"sw $a0 0($sp)\n"
-                f"addiu $sp $sp -4\n"
+                f"sw $a0, 0($sp)\n"
+                f"addiu $sp, $sp, -4\n"
                 f"{str2}\n"
-                f"lw $t1 4($sp)\n"
-                f"bne $a0 $t1 true{self.beq_counter}\n"
-                f"li $a0 0\n"
+                f"lw $t1, 4($sp)\n"
+                f"bne $a0, $t1, true{self.beq_counter}\n"
+                f"li $a0, 0\n"
                 f"b eo_true{self.beq_counter}\n"
                 f"true{self.beq_counter}:\n"
-                f"li $a0 1\n"
+                f"li $a0, 1\n"
                 f"eo_true{self.beq_counter}:\n"
-                f"addiu $sp $sp 4\n"
+                f"addiu $sp, $sp, 4\n"
             )
             self.beq_counter += 1
         elif(rexp_rexp.leaf[0] == "<="):
             string += (
                 f"{str1}\n"
-                f"sw $a0 0($sp)\n"
-                f"addiu $sp $sp -4\n"
+                f"sw $a0, 0($sp)\n"
+                f"addiu $sp, $sp, -4\n"
                 f"{str2}\n"
-                f"lw $t1 4($sp)\n"
-                f"slt $a0 $a0 $t1\n"
-                f"beq $a0 $zero true{self.beq_counter}\n"
-                f"li $a0 0\n"
+                f"lw $t1, 4($sp)\n"
+                f"slt $a0, $a0, $t1\n"
+                f"beq $a0, $zero, true{self.beq_counter}\n"
+                f"li $a0, 0\n"
                 f"b eo_true{self.beq_counter}\n"
                 f"true{self.beq_counter}:\n"
-                f"li $a0 1\n"
+                f"li $a0, 1\n"
                 f"eo_true{self.beq_counter}:\n"
-                f"addiu $sp $sp 4\n"
+                f"addiu $sp, $sp, 4\n"
             )
             self.beq_counter += 1
         elif(rexp_rexp.leaf[0] == ">="):
             string += (
                 f"{str1}\n"
-                f"sw $a0 0($sp)\n"
-                f"addiu $sp $sp -4\n"
+                f"sw $a0, 0($sp)\n"
+                f"addiu $sp, $sp, -4\n"
                 f"{str2}\n"
-                f"lw $t1 4($sp)\n"
-                f"slt $a0 $t1 $a0\n"
-                f"beq $a0 $zero true{self.beq_counter}\n"
-                f"li $a0 0\n"
+                f"lw $t1, 4($sp)\n"
+                f"slt $a0, $t1, $a0\n"
+                f"beq $a0, $zero, true{self.beq_counter}\n"
+                f"li $a0, 0\n"
                 f"b eo_true{self.beq_counter}\n"
                 f"true{self.beq_counter}:\n"
-                f"li $a0 1\n"
+                f"li $a0, 1\n"
                 f"eo_true{self.beq_counter}:\n"
-                f"addiu $sp $sp 4\n"
+                f"addiu $sp, $sp, 4\n"
             )
             self.beq_counter += 1
-        string += ""
         return string
 
     def cgen_rexp_aexp(self,resp_aexp):
         string = ""
         string += self.cgen_aexp(resp_aexp.children[0])
-        string += ""
         return string
 
     #--------------AEXP--------------#
@@ -373,7 +359,6 @@ class Code:
             string += self.cgen_aexp_aexp(aexp)
         else:
             string += self.cgen_aexp_mexp(aexp)
-        string += ""
         return string
 
     def cgen_aexp_aexp(self,aexp_aexp):
@@ -385,20 +370,18 @@ class Code:
             op = "sub"
         string += (
             f"{str1}\n"
-            f"sw $a0 0($sp)\n"
-            f"addiu $sp $sp -4\n"
+            f"sw $a0, 0($sp)\n"
+            f"addiu $sp, $sp, -4\n"
             f"{str2}\n"
-            f"lw $t1 4($sp)\n"
-            f"{op} $a0 $t1 $a0\n"
-            f"addiu $sp $sp 4\n"
+            f"lw $t1, 4($sp)\n"
+            f"{op} $a0, $t1, $a0\n"
+            f"addiu $sp, $sp, 4\n"
         )
-        string += ""
         return string
 
     def cgen_aexp_mexp(self,aexp_mexp):
         string = ""
         string += self.cgen_mexp(aexp_mexp.children[0])
-        string += ""
         return string
 
     #--------------MEXP--------------#
@@ -409,7 +392,6 @@ class Code:
             string += self.cgen_mexp_mexp(mexp)
         else:
             string += self.cgen_mexp_sexp(mexp)
-        string += ""
         return string
 
     def cgen_mexp_mexp(self,mexp_mexp):
@@ -419,20 +401,18 @@ class Code:
         op = "mul"
         string += (
             f"{str1}\n"
-            f"sw $a0 0($sp)\n"
-            f"addiu $sp $sp -4\n"
+            f"sw $a0, 0($sp)\n"
+            f"addiu $sp, $sp, -4\n"
             f"{str2}\n"
-            f"lw $t1 4($sp)\n"
-            f"{op} $a0 $t1 $a0\n"
-            f"addiu $sp $sp 4\n"
+            f"lw $t1, 4($sp)\n"
+            f"{op} $a0, $t1, $a0\n"
+            f"addiu $sp, $sp, 4\n"
         )
-        string += ""
         return string
 
     def cgen_mexp_sexp(self,mexp_sexp):
         string = ""
         string += self.cgen_sexp(mexp_sexp.children[0])
-        string += ""
         return string
 
     #--------------SEXP--------------#
@@ -460,7 +440,6 @@ class Code:
                 string += self.cgen_sexp_number(sexp)
         else:
             string += self.cgen_pexp(sexp)
-        string += ""
         return string
 
     def cgen_sexp_not(self,sexp_not):
@@ -470,7 +449,6 @@ class Code:
             f"{str1}\n"
             f"nor $a0 $a0 $zero\n"
         )
-        string += ""
         return string
 
     def cgen_sexp_minus(self,sexp_minus):
@@ -480,40 +458,35 @@ class Code:
             f"{str1}\n"
             f"neg $a0 $a0\n"
         )
-        string += ""
         return string
 
     def cgen_sexp_true(self,sexp_true):
         string = ""
         string += (
-            f"li $a0 1\n"
+            f"li $a0, 1\n"
         )
-        string += ""
         return string
 
     def cgen_sexp_false(self,sexp_false):
         string = ""
         string += (
-            f"li $a0 0\n"
+            f"li $a0, 0\n"
         )
-        string += ""
         return string
 
     def cgen_sexp_number(self,sexp_number):
         string = ""
         num = int(sexp_number.leaf[0])
         string += (
-            f"li $a0 {num}\n"
+            f"li $a0, {num}\n"
         )
-        string += ""
         return string
 
     def cgen_sexp_null(self,sexp_null):
         string = ""
         string += (
-            f"li $a0 0\n"
+            f"li $a0, 0\n"
         )
-        string += ""
         return string
 
     def cgen_sexp_new(self,sexp_new):
@@ -525,9 +498,8 @@ class Code:
         var = sexp_dot.children[0].leaf[0]
         arrlen = self.stab[var].len
         string += (
-            f"li $a0 {arrlen}\n"
+            f"li $a0, {arrlen}\n"
         )
-        string += ""
         return string
 
     def cgen_sexp_lsb(self,sexp_lsb):
@@ -543,16 +515,14 @@ class Code:
         pos = 4 * int(child.leaf[0])
 
         string += (
-            f"la $t1 {var}\n"
-            f"lw $a0 {pos}($t1)\n"
+            f"la $t1, {var}\n"
+            f"lw $a0, {pos}($t1)\n"
         )
-        string += ""
         return string
 
     def cgen_sexp_pexp(self,sexp_pexp):
         string = ""
         string += self.cgen_pexp(sexp_pexp.children[0])
-        string += ""
         return string
 
     #--------------PEXP--------------#
@@ -609,7 +579,6 @@ class Code:
         if(len(loopvar_ini.children) != 0):
             string += self.cgen_var_tipo(loopvar_ini.children[0])
             string += self.cgen_loopvar_ini(loopvar_ini.children[1])
-        string += ""
         return string
 
     def cgen_loopmetodo_ini(self,loopmetodo_ini):
@@ -617,7 +586,6 @@ class Code:
         if(len(loopmetodo_ini.children) != 0):
             string += self.cgen_metodo_public(loopmetodo_ini.children[0])
             string += self.cgen_loopmetodo_ini(loopmetodo_ini.children[1])
-        string += ""
         return string
 
     def cgen_loopclasse_ini(self,loopclasse_ini):
@@ -625,7 +593,6 @@ class Code:
         if(len(loopclasse_ini.children) != 0):
             string += self.cgen_classe_id(loopclasse_ini.children[0])
             string += self.cgen_loopclasse_ini(loopclasse_ini.children[1])
-        string += ""
         return string
 
     def cgen_loopcmd_ini(self,loopcmd_ini):
@@ -633,7 +600,6 @@ class Code:
         if(len(loopcmd_ini.children) != 0):
             string += self.cgen_cmd(loopcmd_ini.children[0])
             string += self.cgen_loopcmd_ini(loopcmd_ini.children[1])
-        string += ""
         return string
 
     def cgen_loopvirgulatipoid_ini(self,loopvirgulatipoid_ini):
