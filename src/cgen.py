@@ -37,7 +37,7 @@ class Code:
     #--------------MAIN--------------#
 
     def cgen_main_class(self,main_class):
-        string_ch1 = "//MAINCLASS\n"
+        string_ch1 = ""
         if(main_class.children[0] is not None):
             string_ch1 += self.cgen_cmd(main_class.children[0])
 
@@ -57,10 +57,10 @@ class Code:
     #--------------CLASSE--------------#
 
     def cgen_classe_id(self,classe_id):
-        string = "//CLASSE_ID"
+        string = ""
         string += self.cgen_loopvar_ini(classe_id.children[1])
         string += self.cgen_loopmetodo_ini(classe_id.children[2])
-        string += "//EO_CLASSE_ID"
+        string += ""
         return string
 
     #--------------VAR--------------#
@@ -71,11 +71,11 @@ class Code:
     #--------------METODO--------------#
 
     def cgen_metodo_public(self,metodo_public):
-        string = "//Metodo_public"
+        string = ""
         string += self.cgen_loopvar_ini(metodo_public.children[2])
         string += self.cgen_loopcmd_ini(metodo_public.children[3])
         string += self.cgen_exp(metodo_public.children[4])
-        string += "//EO_Metodo_public"
+        string += ""
         return string
 
     #--------------PARAMS--------------#
@@ -124,13 +124,13 @@ class Code:
         return string_ch1
 
     def cgen_cmd_chave(self,cmd_chave):
-        string = "//cmd_chave"
+        string = ""
         string += self.cgen_loopcmd_ini(cmd_chave.children[0])
-        string += "//EO_cmd_chave"
+        string += ""
         return string
 
     def cgen_cmd_if(self,cmd_if):
-        string = "//IF_ELSE"
+        string = ""
         cond = self.cgen_exp(cmd_if.children[0])
         str1 = self.cgen_exp(cmd_if.children[1])
         string += (
@@ -143,11 +143,11 @@ class Code:
             f"addiu $sp $sp 4\n"
             )
         self.beq_counter += 1
-        string += "//EO_IF_ELSE"
+        string += ""
         return string
 
     def cgen_cmd_ifelse(self,cmd_ifelse):
-        string = "//IF_ELSE"
+        string = ""
         cond = self.cgen_exp(cmd_ifelse.children[0])
         str1 = self.cgen_cmd(cmd_ifelse.children[1])
         str2 = self.cgen_cmd(cmd_ifelse.children[2])
@@ -164,11 +164,11 @@ class Code:
             f"addiu $sp $sp 4\n"
             )
         self.beq_counter += 1
-        string += "//EO_IF_ELSE"
+        string += ""
         return string
 
     def cgen_cmd_while(self,cmd_while):
-        string = "//IF_ELSE"
+        string = ""
         cond = self.cgen_exp(cmd_ifelse.children[0])
         str1 = self.cgen_cmd(cmd_ifelse.children[1])
         string += (
@@ -183,14 +183,14 @@ class Code:
             f"addiu $sp $sp 4\n"
             )
         self.beq_counter += 1
-        string += "//EO_IF_ELSE"
+        string += ""
         return string
 
     def cgen_cmd_sout(self,cmd_sout):
         return ""
 
     def cgen_cmd_ideq(self,cmd_ideq):
-        string = "//cmd_ideq"
+        string = ""
         var = cmd_ideq.leaf[0]
         str1 = self.cgen_exp(cmd_ideq.children[0])
         string += (
@@ -198,17 +198,18 @@ class Code:
             f"la $t1 {var}\n"
             f"lw $a0 0($t1)\n"
         )
-        string += "//EO_cmd_ideq"
+        string += ""
         return string
 
     def cgen_cmd_id(self,cmd_id):
-        string = "//cmd_id"
-        var = cmd_ideq.leaf[0]
-        str1 = self.cgen_exp(cmd_ideq.children[1])
+        string = ""
+        var = cmd_id.leaf[0]
+        str1 = self.cgen_exp(cmd_id.children[1])
 
         # pega posição do array desde que seja estática
         child = cmd_id.children[0]
-        while len(child.children) > 1:
+        print("oro")
+        while len(child.children) > 0:
             child = child.children[0]
         pos = 4 * int(child.leaf[0])
 
@@ -217,23 +218,23 @@ class Code:
             f"la $t1 {var}\n"
             f"lw $a0 {pos}($t1)\n"
         )
-        string += "//EO_cmd_id"
+        string += ""
         return string
 
     #--------------EXP--------------#
 
     def cgen_exp(self,exp):
-        string = "//EXP"
+        string = ""
         if(len(exp.children) > 1):
             string += self.cgen_exp_exp(exp)
         else:
             string += self.cgen_exp_rexp(exp)
-        string += "//EO_EXP"
+        string += ""
         return string
 
 
     def cgen_exp_exp(self,exp_exp):
-        string = "//EXP_EXP"
+        string = ""
         str1 = cgen(exp_exp.children[0])
         str2 = cgen(exp_rexp.children[1])
         string += (
@@ -245,28 +246,28 @@ class Code:
             f"and $a0 $t1 $a0\n"
             f"addiu $sp $sp 4\n"
         )
-        string += "//EO_EXP_EXP"
+        string += ""
         return string
 
     def cgen_exp_rexp(self,exp_rexp):
-        string = "//EXP_REXP"
+        string = ""
         string += self.cgen_rexp(exp_rexp.children[0])
-        string += "//EO_EXP_REXP"
+        string += ""
         return string
 
     #--------------REXP--------------#
 
     def cgen_rexp(self,rexp):
-        string = "//Rexp"
+        string = ""
         if(len(rexp.children) > 1):
             string += self.cgen_rexp_rexp(rexp)
         else:
             string += self.cgen_rexp_aexp(rexp)
-        string += "//EO_Rexp"
+        string += ""
         return string
 
     def cgen_rexp_rexp(self,rexp_rexp):
-        string = "//Rexp_Rexp"
+        string = ""
         str1 = self.cgen_rexp(rexp_rexp.children[0])
         str2 = self.cgen_aexp(rexp_rexp.children[1])
         if(rexp_rexp.leaf[0] == "<"):
@@ -355,27 +356,28 @@ class Code:
                 f"addiu $sp $sp 4\n"
             )
             self.beq_counter += 1
-        string += "//EO_Rexp_Rexp"
+        string += ""
         return string
 
     def cgen_rexp_aexp(self,resp_aexp):
-        string = "//Resp_aexp"
+        string = ""
         string += self.cgen_aexp(resp_aexp.children[0])
-        string += "//EO_Resp_aexp"
+        string += ""
+        return string
 
     #--------------AEXP--------------#
 
     def cgen_aexp(self,aexp):
-        string = "//AEXP"
+        string = ""
         if(len(aexp.children) > 1):
             string += self.cgen_aexp_aexp(aexp)
         else:
             string += self.cgen_aexp_mexp(aexp)
-        string += "//EO_AEXP"
+        string += ""
         return string
 
     def cgen_aexp_aexp(self,aexp_aexp):
-        string = "//AEXP"
+        string = ""
         str1 += self.cgen_aexp(aexp_aexp.children[0])
         str2 += self.cgen_aexp(aexp_aexp.children[1])
         op = "add"
@@ -390,28 +392,28 @@ class Code:
             f"{op} $a0 $t1 $a0\n"
             f"addiu $sp $sp 4\n"
         )
-        string += "//EO_AEXP_AEXP"
+        string += ""
         return string
 
     def cgen_aexp_mexp(self,aexp_mexp):
-        string = "//AEXP_MEXP"
+        string = ""
         string += self.cgen_mexp(aexp_mexp.children[0])
-        string += "//EO_AEXP_MEXP"
+        string += ""
         return string
 
     #--------------MEXP--------------#
 
     def cgen_mexp(self,mexp):
-        string = "//MEXP"
+        string = ""
         if(len(mexp.children) > 1):
             string += self.cgen_mexp_mexp(mexp)
         else:
             string += self.cgen_mexp_sexp(mexp)
-        string += "//EO_MEXP"
+        string += ""
         return string
 
     def cgen_mexp_mexp(self,mexp_mexp):
-        string = "//MEXP"
+        string = ""
         str1 += self.cgen_mexp(mexp_mexp.children[0])
         str2 += self.cgen_mexp(mexp_mexp.children[1])
         op = "mul"
@@ -424,19 +426,19 @@ class Code:
             f"{op} $a0 $t1 $a0\n"
             f"addiu $sp $sp 4\n"
         )
-        string += "//EO_MEXP_MEXP"
+        string += ""
         return string
 
     def cgen_mexp_sexp(self,mexp_sexp):
-        string = "//MEXP_SEXP"
+        string = ""
         string += self.cgen_sexp(mexp_sexp.children[0])
-        string += "//EO_MEXP_SEXP"
+        string += ""
         return string
 
     #--------------SEXP--------------#
 
     def cgen_sexp(self,sexp):
-        string = "//SEXP"
+        string = ""
         if(len(sexp.leaf) > 0):
             if(sexp.leaf[0] == "!"):
                 string += self.cgen_sexp_not(sexp)
@@ -458,60 +460,60 @@ class Code:
                 string += self.cgen_sexp_number(sexp)
         else:
             string += self.cgen_pexp(sexp)
-        string += "//EO_SEXP"
+        string += ""
         return string
 
     def cgen_sexp_not(self,sexp_not):
-        string = "//SEXP_NOT"
+        string = ""
         str1 = self.cgen_sexp(sexp_not.children[0])
         string += (
             f"{str1}\n"
             f"nor $a0 $a0 $zero\n"
         )
-        string += "//EO_SEXP_NOT"
+        string += ""
         return string
 
     def cgen_sexp_minus(self,sexp_minus):
-        string = "//SEXP_minus"
+        string = ""
         str1 = self.cgen_sexp(sexp_minus.children[0])
         string += (
             f"{str1}\n"
             f"neg $a0 $a0\n"
         )
-        string += "//EO_SEXP_minus"
+        string += ""
         return string
 
     def cgen_sexp_true(self,sexp_true):
-        string = "//SEXP_true"
+        string = ""
         string += (
             f"li $a0 1\n"
         )
-        string += "//EO_SEXP_true"
+        string += ""
         return string
 
     def cgen_sexp_false(self,sexp_false):
-        string = "//SEXP_false"
+        string = ""
         string += (
             f"li $a0 0\n"
         )
-        string += "//EO_SEXP_false"
+        string += ""
         return string
 
     def cgen_sexp_number(self,sexp_number):
-        string = "//SEXP_number"
-        num = int(sexp_number.children[0])
+        string = ""
+        num = int(sexp_number.leaf[0])
         string += (
             f"li $a0 {num}\n"
         )
-        string += "//EO_SEXP_number"
+        string += ""
         return string
 
     def cgen_sexp_null(self,sexp_null):
-        string = "//SEXP_null"
+        string = ""
         string += (
             f"li $a0 0\n"
         )
-        string += "//EO_SEXP_null"
+        string += ""
         return string
 
     def cgen_sexp_new(self,sexp_new):
@@ -519,24 +521,24 @@ class Code:
         return ""
 
     def cgen_sexp_dot(self,sexp_dot):
-        string = "//sexp_dot"
+        string = ""
         var = sexp_dot.children[0].leaf[0]
         arrlen = self.stab[var].len
         string += (
             f"li $a0 {arrlen}\n"
         )
-        string += "//EO_sexp_dot"
+        string += ""
         return string
 
     def cgen_sexp_lsb(self,sexp_lsb):
-        string = "//sexp_lsb"
+        string = ""
         var = sexp_lsb.children[0].leaf[0]
 
         # pega posição do array desde que seja estática
         child = sexp_lsb.children[1]
         while True:
             child = child.children[0]
-            if len(child.children[0]) < 1:
+            if len(child.children) < 1:
                 break
         pos = 4 * int(child.leaf[0])
 
@@ -544,13 +546,13 @@ class Code:
             f"la $t1 {var}\n"
             f"lw $a0 {pos}($t1)\n"
         )
-        string += "//EO_sexp_lsb"
+        string += ""
         return string
 
     def cgen_sexp_pexp(self,sexp_pexp):
-        string = "//SEXP_pexp"
+        string = ""
         string += self.cgen_pexp(sexp_pexp.children[0])
-        string += "//EO_SEXP_pexp"
+        string += ""
         return string
 
     #--------------PEXP--------------#
@@ -603,35 +605,35 @@ class Code:
     #--------------{LOOP}--------------#
 
     def cgen_loopvar_ini(self,loopvar_ini):
-        string = "//LOOPvar\n"
+        string = ""
         if(len(loopvar_ini.children) != 0):
             string += self.cgen_var_tipo(loopvar_ini.children[0])
             string += self.cgen_loopvar_ini(loopvar_ini.children[1])
-        string += "//EO_LOOPvar\n"
+        string += ""
         return string
 
     def cgen_loopmetodo_ini(self,loopmetodo_ini):
-        string = "//LOOPmetodo\n"
+        string = ""
         if(len(loopmetodo_ini.children) != 0):
             string += self.cgen_metodo_public(loopmetodo_ini.children[0])
             string += self.cgen_loopmetodo_ini(loopmetodo_ini.children[1])
-        string += "//EO_LOOPmetodo\n"
+        string += ""
         return string
 
     def cgen_loopclasse_ini(self,loopclasse_ini):
-        string = "//LOOPCLASSE\n"
+        string = ""
         if(len(loopclasse_ini.children) != 0):
             string += self.cgen_classe_id(loopclasse_ini.children[0])
             string += self.cgen_loopclasse_ini(loopclasse_ini.children[1])
-        string += "//EO_LOOPCLASSE\n"
+        string += ""
         return string
 
     def cgen_loopcmd_ini(self,loopcmd_ini):
-        string = "//LOOPcmd\n"
+        string = ""
         if(len(loopcmd_ini.children) != 0):
             string += self.cgen_cmd(loopcmd_ini.children[0])
             string += self.cgen_loopcmd_ini(loopcmd_ini.children[1])
-        string += "//EO_LOOPcmd\n"
+        string += ""
         return string
 
     def cgen_loopvirgulatipoid_ini(self,loopvirgulatipoid_ini):
