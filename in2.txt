@@ -13,10 +13,10 @@ class Fac{
         int c;
         {
             result = new int[4];
-            //result[2] = 5;
-            a = result.length;
-            b = (3 + 1) * (2 - 5);
-            c = b;
+            result[2] = this.b;
+            //a = result.length;
+            b = (3 + 1) * 2;
+            //c = b;
         }
         return b;
     }

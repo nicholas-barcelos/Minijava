@@ -367,9 +367,9 @@ class Parser:
                           |
         """
         if(len(p) > 2): # é a primeira produção
-            p[0] = nd.Node('loopvirgulatipoid', [ p[2], p[3] ], [ p[1] ])
+            p[0] = nd.Node('loopvirgulaexp', [ p[2], p[3] ], [ p[1] ])
         else:
-            p[0] = nd.Node('loopvirgulatipoid', [], [])
+            p[0] = nd.Node('loopvirgulaexp', [], [])
     #------------------------------FIM------------------------------#
 
     def p_error(self,p):

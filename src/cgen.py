@@ -554,10 +554,16 @@ class Code:
         string = ""
         if (len(pexp.children[0].leaf) == 1 
             and pexp.children[0].leaf[0].lower() != "this"):
-                string += self.cgen_pexp_id(pexp.children[0])
-        if (len(pexp.children[0].leaf) == 2
-            and  pexp.children[0].leaf[0] == "("):
-                string += self.cgen_pexp_lp(pexp.children[0])
+            string += self.cgen_pexp_id(pexp.children[0])
+
+        elif (len(pexp.children[0].leaf) == 2
+            and pexp.children[0].leaf[0] == "("):
+            string += self.cgen_pexp_lp(pexp.children[0])
+
+        elif (len(pexp.children[0].leaf) == 2
+            and pexp.children[0].leaf[0] != "("):
+            string += self.cgen_pexp_pexp(pexp.children[0])
+
         return string
 
     def cgen_pexp_id(self,pexp_id):
@@ -569,21 +575,27 @@ class Code:
         return string
 
     def cgen_pexp_this(self,pexp_this):
-        # feito no sexp ?
+        # folha sem efeito no cgen
+        # variável acessada pelo 'cgen_pexp_pexp'
         return ""
 
     def cgen_pexp_new(self,pexp_new):
-        # cgen da classe ?
+        # Construtor de classe sem efeito no cgen
+        # pois construtores não recebem argumentos
         return ""
 
     def cgen_pexp_lp(self,pexp_lp):
-        # print(f"pexplp: {pexp_lp.children[0].type}")
         string = self.cgen_exp(pexp_lp.children[0])
         return string
 
     def cgen_pexp_pexp(self,pexp_pexp):
-        # acessa var da classe ?
-        return ""
+        # acessa propriedade de classe
+        vname = pexp_pexp.leaf[1]
+        string = (
+            f"la $t1, {vname}\n"
+            f"lw $a0, 0($t1)\n"
+        )
+        return string
 
     def cgen_pexp_pexplp(self,pexp_pexplp):
         # execução de método da classe
@@ -641,6 +653,8 @@ class Code:
 
     def cgen_loopvirgulatipoid_ini(self,loopvirgulatipoid_ini):
         # verificação de param da def do método
+        # contagem dos parametros da def feitas
+        # na análise semantica
         pass
 
     def cgen_loopvirgulaexp_ini(self,loopvirgulaexp_ini):
