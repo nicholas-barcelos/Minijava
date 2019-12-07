@@ -1,16 +1,16 @@
 class Factorial{
     public static void main(String[] a){
-        System.out.println(new Fac().ComputeFac(1));
+        System.out.println(new Fac().ComputeFac(7,8));
     }
 }
 
 class Fac{
-    public int ComputeFac(int num){
+    public int ComputeFac(int num1, int num2, int num3){
         int[] result;
         boolean bool;
         int a;
         {
-            result = new int[3];
+            result = new int[4];
             result[2] = 5;
             a = result.length;
         }

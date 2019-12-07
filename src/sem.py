@@ -1,10 +1,11 @@
 import src.node as nd
 
 class Symbol:
-    def __init__(self, vtype = None, prox = None, len = None):
+    def __init__(self, vtype = None, prox = None, len = None, paramlen = None):
         self.vtype = vtype
         self.prox = prox
         self.len = len
+        self.paramlen = paramlen
 
     def __key(self):
         return (self.vtype, self.prox, self.len)
@@ -75,6 +76,18 @@ class Semantic:
                         if (self.stab[vname].len is None
                             or self.stab[vname].len <= pos):
                             raise Exception(f"Atribuição de indíce fora de alcance da variavel \'{vname}\': {pos}.")
-
+            elif current_node.type == 'metodo':
+                vtype = current_node.children[0].leaf[0]
+                vname = current_node.leaf[1]
+                params = 0
+                child = current_node.children[1] # optparams
+                if len(child.children) > 0:
+                    child = child.children[0] # params
+                    # loopvirgulatipoid
+                    while len(child.children) > 1:
+                        child = child.children[1]
+                        params += 1
+                self.stab[vname] = Symbol(vtype=vtype,paramlen=params)
+            # prossegue a montagem
             for child in current_node.children:            
                 self.make_table(child)

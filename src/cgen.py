@@ -11,10 +11,11 @@ class Code:
         with open('out.txt', 'w') as out:
             str1 = ""
             for vname in self.stab.keys():
-                if self.stab[vname].vtype == 'array':
-                    str1 += f"{vname}: .word {', '.join(map(str, [0]*self.stab[vname].len))}\n"
-                else:
-                    str1 += f"{vname}: .word 0\n"
+                if self.stab[vname].paramlen is None: # É variável
+                    if self.stab[vname].vtype == 'array':
+                        str1 += f"{vname}: .word {', '.join(map(str, [0]*self.stab[vname].len))}\n"
+                    else:
+                        str1 += f"{vname}: .word 0\n"
             string = (
                 f".data\n"
                 f"{str1}"
@@ -72,6 +73,8 @@ class Code:
     def cgen_metodo_public(self,metodo_public):
         # variável da classe já esta no .data
         # vl += self.cgen_loopvar_ini(metodo_public.children[2])
+        n = self.stab[metodo_public.leaf[1]].paramlen
+        z = 4 * n + 8
         cmds = self.cgen_loopcmd_ini(metodo_public.children[3])
         ret = self.cgen_exp(metodo_public.children[4])
         string = (
@@ -85,7 +88,7 @@ class Code:
             f"{ret}"
             f"# prepara saida\n"
             f"lw $ra, 4($sp)\n"
-            f"addiu $sp, $sp, 12\n"
+            f"addiu $sp, $sp, {z}\n"
             f"lw $fp, 0($sp)\n"
             f"jr $ra\n\n"
         )
@@ -583,6 +586,7 @@ class Code:
 
     def cgen_optparams_part(self,optparams_part):
         # montagem dos params da def do método
+        # feito na analise semantica
         pass
 
     def cgen_optexps_part(self,optexps_part):
