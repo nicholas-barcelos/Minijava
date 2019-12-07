@@ -13,7 +13,10 @@ class Code:
             for vname in self.stab.keys():
                 if self.stab[vname].paramlen is None: # É variável
                     if self.stab[vname].vtype == 'array':
-                        str1 += f"{vname}: .word {', '.join(map(str, [0]*self.stab[vname].len))}\n"
+                        try:
+                            str1 += f"{vname}: .word {', '.join(map(str, [0]*self.stab[vname].len))}\n"
+                        except:
+                            print(f"Array \'{vname}\' não inicializado, logo não foi escrito no .data")
                     else:
                         str1 += f"{vname}: .word 0\n"
             string = (
@@ -547,12 +550,20 @@ class Code:
 
     #--------------PEXP--------------#
 
-    def cgen_pexp(self,pexp_id):
-        return ""
+    def cgen_pexp(self,pexp):
+        string = ""
+        if (len(pexp.children[0].leaf) == 1 
+            and pexp.children[0].leaf[0].lower() != "this"):
+                string += self.cgen_pexp_id(pexp.children[0])
+        return string
 
     def cgen_pexp_id(self,pexp_id):
-        # feito no sexp
-        return ""
+        vname = pexp_id.leaf[0]
+        string = (
+            f"la $t1, {vname}\n"
+            f"lw $a0, 0($t1)\n"
+        )
+        return string
 
     def cgen_pexp_this(self,pexp_this):
         # feito no sexp ?
@@ -586,7 +597,7 @@ class Code:
 
     def cgen_optparams_part(self,optparams_part):
         # montagem dos params da def do método
-        # feito na analise semantica
+        # contagem feita na analise semantica
         pass
 
     def cgen_optexps_part(self,optexps_part):

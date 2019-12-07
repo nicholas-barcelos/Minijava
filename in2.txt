@@ -9,11 +9,14 @@ class Fac{
         int[] result;
         boolean bool;
         int a;
+        int b;
+        int c;
         {
             result = new int[4];
-            result[2] = 5;
-            a = result.length;
+            //result[2] = 5;
+            //a = result.length;
+            b = result[1];
         }
-        return result[1];
+        return result[3];
     }
 }

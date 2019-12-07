@@ -2,6 +2,8 @@
 result: .word 0, 0, 0, 0
 bool: .word 0
 a: .word 0
+b: .word 0
+c: .word 0
 .text
 main_entry:
   move $fp, $sp
@@ -19,15 +21,13 @@ move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
 # cmds do metodo
-li $a0, 5
 la $t1, result
-sw $a0, 8($t1)
-li $a0, 4
-la $t1, a
+lw $a0, 4($t1)
+la $t1, b
 sw $a0, 0($t1)
 # retorno
 la $t1, result
-lw $a0, 4($t1)
+lw $a0, 12($t1)
 # prepara saida
 lw $ra, 4($sp)
 addiu $sp, $sp, 20
