@@ -5,20 +5,30 @@ class Code:
     def __init__(self,stab):
         self.stab = stab
         self.beq_counter = 0
+        self.currClass = None
+        self.currMethod = None
 
     #passa arvore sintatica
-    def gera_mips(self,tree): 
+    def gera_mips(self,tree):
+        self.currClass = None
+        self.currMethod = None 
         with open('out.txt', 'w') as out:
             str1 = ""
-            for vname in self.stab.keys():
-                if self.stab[vname].paramlen is None: # É variável
-                    if self.stab[vname].vtype == 'array':
-                        try:
-                            str1 += f"{vname}: .word {', '.join(map(str, [0]*self.stab[vname].len))}\n"
-                        except:
-                            print(f"Array \'{vname}\' não inicializado, logo não foi escrito no .data")
-                    else:
-                        str1 += f"{vname}: .word 0\n"
+            for classe in self.stab.keys():
+                for metodo in self.stab[classe].keys():
+                    clm = self.stab[classe][metodo]
+                    # print("clm params", clm.params)
+                    # print("clm scope", clm.scopeVars)
+                    for vname in clm.scopeVars.keys():
+                        va = clm.scopeVars[vname]
+                        if va.paramlen is None: # É variável
+                            if va.vtype == 'array':
+                                try:
+                                    str1 += f"{classe}_{metodo}_{vname}: .word {', '.join(map(str, [0]*va.len))}\n"
+                                except:
+                                    print(f"Array \'{vname}\' não inicializado, logo não foi escrito no .data")
+                            else:
+                                str1 += f"{classe}_{metodo}_{vname}: .word 0\n"
             string = (
                 f".data\n"
                 f"{str1}"
@@ -41,6 +51,8 @@ class Code:
     #--------------MAIN--------------#
 
     def cgen_main_class(self,main_class):
+        self.currClass = main_class.leaf[1].lower()
+        self.currMethod = "main"
         string_ch1 = ""
         if(main_class.children[0] is not None):
             string_ch1 += self.cgen_cmd(main_class.children[0])
@@ -56,7 +68,9 @@ class Code:
     #--------------CLASSE--------------#
 
     def cgen_classe_id(self,classe_id):
-        string = f"class_{classe_id.leaf[1].lower()}:\n"
+        self.currClass = classe_id.leaf[1].lower()
+        self.currMethod = None
+        string = f"class_{self.currClass}:\n"
         string += self.cgen_loopvar_ini(classe_id.children[1])
         string += self.cgen_loopmetodo_ini(classe_id.children[2])
         return string
@@ -71,12 +85,13 @@ class Code:
     def cgen_metodo_public(self,metodo_public):
         # variável da classe já esta no .data
         # vl += self.cgen_loopvar_ini(metodo_public.children[2])
-        n = self.stab[metodo_public.leaf[1]].paramlen
+        self.currMethod = metodo_public.leaf[1].lower()
+        n = self.stab[self.currClass][self.currMethod].paramlen
         z = 4 * n + 8
         cmds = self.cgen_loopcmd_ini(metodo_public.children[3])
         ret = self.cgen_exp(metodo_public.children[4])
         string = (
-            f"def_{metodo_public.leaf[1].lower()}:\n"
+            f"def_{self.currClass}_{self.currMethod}:\n"
             f"move $fp, $sp\n"
             f"sw $ra, 0($sp)\n"
             f"addiu $sp, $sp, -4\n"
@@ -207,33 +222,40 @@ class Code:
 
     def cgen_cmd_ideq(self,cmd_ideq):
         string = ""
-        var = cmd_ideq.leaf[0]
+        var = cmd_ideq.leaf[0].lower()
+        cname = self.currClass
+        mname = self.currMethod
         str1 = self.cgen_exp(cmd_ideq.children[0])
         if str1 == "":
             return ""
         else:
             string += (
                 f"{str1}"
-                f"la $t1, {var}\n"
-                f"sw $a0, 0($t1)\n"
+                f"# Computou a expressao\n"
+                f"la $t1, {cname}_{mname}_{var}\n"
+                f"sw $a0, 0($t1) #Atribuiu a variavel\n"
             )
         return string
 
     def cgen_cmd_id(self,cmd_id):
         string = ""
-        var = cmd_id.leaf[0]
+        var = cmd_id.leaf[0].lower()
+        cname = self.currClass
+        mname = self.currMethod
         str1 = self.cgen_exp(cmd_id.children[1])
 
         # pega posição do array desde que seja estática
         child = cmd_id.children[0]
         while len(child.children) > 0:
             child = child.children[0]
-        pos = 4 * int(child.leaf[0])
+        i = int(child.leaf[0])
+        pos = 4 * i
 
         string += (
             f"{str1}"
-            f"la $t1, {var}\n"
-            f"sw $a0, {pos}($t1)\n"
+            f"# Computou a expressao\n"
+            f"la $t1, {cname}_{mname}_{var}\n"
+            f"sw $a0, {pos}($t1) #Atribuiu a posicao {i} do array\n"
         )
         return string
 
@@ -519,8 +541,9 @@ class Code:
 
     def cgen_sexp_dot(self,sexp_dot):
         string = ""
-        var = sexp_dot.children[0].leaf[0]
-        arrlen = self.stab[var].len
+        var = sexp_dot.children[0].leaf[0].lower()
+        metodo = self.stab[self.currClass][self.currMethod]
+        arrlen = metodo.scopeVars[var].len
         string += (
             f"li $a0, {arrlen}\n"
         )
@@ -528,7 +551,9 @@ class Code:
 
     def cgen_sexp_lsb(self,sexp_lsb):
         string = ""
-        var = sexp_lsb.children[0].leaf[0]
+        var = sexp_lsb.children[0].leaf[0].lower()
+        cname = self.currClass
+        mname = self.currMethod
 
         # pega posição do array desde que seja estática
         child = sexp_lsb.children[1]
@@ -539,7 +564,7 @@ class Code:
         pos = 4 * int(child.leaf[0])
 
         string += (
-            f"la $t1, {var}\n"
+            f"la $t1, {cname}_{mname}_{var}\n"
             f"lw $a0, {pos}($t1)\n"
         )
         return string
@@ -572,11 +597,31 @@ class Code:
         return string
 
     def cgen_pexp_id(self,pexp_id):
-        vname = pexp_id.leaf[0]
-        string = (
-            f"la $t1, {vname}\n"
-            f"lw $a0, 0($t1)\n"
-        )
+        # retorna valor do id
+        vname = pexp_id.leaf[0].lower()
+        cname = self.currClass
+        mname = self.currMethod
+        scopeVars = self.stab[cname][mname].scopeVars
+        params = self.stab[cname][mname].params
+
+        if vname in scopeVars.keys():
+            var_str = f"{cname}_{mname}_{vname}"
+            string = (
+                f"la $t1, {var_str}\n"
+                f"lw $a0, 0($t1) # Acessa variavel\n"
+            )
+        else:
+            i = 1
+            for pa in params.keys():
+                if pa == vname:
+                    z = 4 * i
+                    string = (
+                        f"lw $a0, {z}($fp) # Pega arg do metodo\n"
+                    )
+                    break
+                else:
+                    i += 1
+
         return string
 
     def cgen_pexp_this(self,pexp_this):
@@ -595,29 +640,34 @@ class Code:
 
     def cgen_pexp_pexp(self,pexp_pexp):
         # acessa propriedade de classe
-        vname = pexp_pexp.leaf[1]
+        vname = pexp_pexp.leaf[1].lower()
+
+        cname = self.currClass
+        mname = self.currMethod
         string = (
-            f"la $t1, {vname}\n"
+            f"la $t1, {cname}_{mname}_{vname}\n"
             f"lw $a0, 0($t1)\n"
         )
         return string
 
     def cgen_pexp_pexplp(self,pexp_pexplp):
         # execução de método da classe
-        vname = pexp_pexplp.leaf[1]
-        paramlen = self.stab[vname].paramlen
-        params = self.stab[vname].params
+        vname = pexp_pexplp.leaf[1].lower()
+        cname = pexp_pexplp.children[0].leaf[1].lower()
+
+        paramlen = self.stab[cname][vname].paramlen
+        params = self.stab[cname][vname].params
         optexps = self.cgen_optexps_part(pexp_pexplp.children[1])
         string = (
-            f"exe_{vname.lower()}:\n"
+            f"exe_{cname}_{vname}:\n"
             f"sw $fp, 0($sp)\n"
             f"addiu $sp, $sp, -4\n"
             f"{optexps}"
-            f"jal def_{vname.lower()}\n"
+            f"jal def_{cname}_{vname}\n"
         )
-        for k in sorted(params.keys(), reverse=True):
-            print("kek ",k)
-            
+        # for k in sorted(params.keys(), reverse=True):
+        #     print("k: ",k)
+
         return string
 
     #--------------EXPS--------------#
