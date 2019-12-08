@@ -31,6 +31,7 @@ class Code:
                                 str1 += f"{classe}_{metodo}_{vname}: .word 0\n"
             string = (
                 f".data\n"
+                f"newline: .asciiz \"\\n\"\n"
                 f"{str1}"
                 f".text\n"
             )
@@ -216,6 +217,11 @@ class Code:
         string = (
             f"#sout\n"
             f"{exp}"
+            f"li $v0, 1 # especifica o servico de print int\n"
+            f"syscall # printa o $a0\n"
+            f"li $v0, 4 # especifica o servico de print string\n"
+            f"la $a0, newline\n"
+            f"syscall # printa o newline\n"
             f"# eo_sout\n"
         )
         return string
