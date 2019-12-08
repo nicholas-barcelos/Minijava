@@ -21,16 +21,17 @@ class Code:
                     clm = self.stab[classe][metodo]
                     # print("clm params", clm.params)
                     # print("clm scope", clm.scopeVars)
-                    for vname in clm.scopeVars.keys():
-                        va = clm.scopeVars[vname]
-                        if va.paramlen is None: # É variável
-                            if va.vtype == 'array':
-                                try:
-                                    str1 += f"{classe}_{metodo}_{vname}: .word {', '.join(map(str, [0]*va.len))}\n"
-                                except:
-                                    print(f"Array \'{vname}\' não inicializado, logo não foi escrito no .data")
-                            else:
-                                str1 += f"{classe}_{metodo}_{vname}: .word 0\n"
+                    if clm.scopeVars is not None:
+                        for vname in clm.scopeVars.keys():
+                            va = clm.scopeVars[vname]
+                            if va.paramlen is None: # É variável
+                                if va.vtype == 'array':
+                                    try:
+                                        str1 += f"{classe}_{metodo}_{vname}: .word {', '.join(map(str, [0]*va.len))}\n"
+                                    except:
+                                        print(f"Array \'{vname}\' não inicializado, logo não foi escrito no .data")
+                                else:
+                                    str1 += f"{classe}_{metodo}_{vname}: .word 0\n"
             string = (
                 f".data\n"
                 f"newline: .asciiz \"\\n\"\n"
@@ -40,6 +41,7 @@ class Code:
             string += self.cgen_prog_main(tree)
             string += "end_program:"
             out.write(string)
+            print("Compilação concluída: Arquivo \'out.asm\' foi gerado com sucesso.")
 
         #--------------PROG--------------#
 
@@ -501,8 +503,14 @@ class Code:
         str1 = self.cgen_sexp(sexp_not.children[0])
         string += (
             f"{str1}\n"
-            f"nor $a0 $a0 $zero\n"
+            f"beq $a0 $zero zerocheck_{self.beq_counter}\n"
+            f"li $a0 0\n"
+            f"b eo_zerocheck_{self.beq_counter}\n"
+            f"zerocheck_{self.beq_counter}:\n"
+            f"li $a0 1\n"
+            f"eo_zerocheck_{self.beq_counter}:\n"
         )
+        self.beq_counter += 1
         return string
 
     def cgen_sexp_minus(self,sexp_minus):
@@ -612,7 +620,7 @@ class Code:
         scopeVars = self.stab[cname][mname].scopeVars
         params = self.stab[cname][mname].params
 
-        if vname in scopeVars.keys():
+        if scopeVars is not None and vname in scopeVars.keys():
             var_str = f"{cname}_{mname}_{vname}"
             string = (
                 f"la $t1, {var_str}\n"

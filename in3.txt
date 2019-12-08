@@ -1,15 +1,22 @@
 class Main{
     public static void main(String[] a){
-        System.out.println(new Test().test1(10));
+        System.out.println(new Aexp().Compute(-1,2,3));
+        // System.out.println(new Aexp().Negate(true));
     }
 }
 
-class Test{
-    public int test1(int num){
-        return num;
+class Aexp{
+    public int Compute(int a, int b, int c){
+        int num_aux;
+        if (a < 0)
+            num_aux = a * (b - 1) * c;
+        else
+            num_aux = a * c + b;
+        return num_aux ;
     }
 
-    public int test2(){
-        return 2;
+    public boolean Negate(boolean b) {
+        System.out.println(b);
+        return !b;
     }
 }
