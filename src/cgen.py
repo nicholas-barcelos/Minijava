@@ -5,14 +5,16 @@ class Code:
     def __init__(self,stab):
         self.stab = stab
         self.beq_counter = 0
+        self.exe_table = None
         self.currClass = None
         self.currMethod = None
 
     #passa arvore sintatica
     def gera_mips(self,tree):
         self.currClass = None
-        self.currMethod = None 
-        with open('out.txt', 'w') as out:
+        self.currMethod = None
+        self.exe_table = dict()
+        with open('out.asm', 'w') as out:
             str1 = ""
             for classe in self.stab.keys():
                 for metodo in self.stab[classe].keys():
@@ -659,13 +661,26 @@ class Code:
     def cgen_pexp_pexplp(self,pexp_pexplp):
         # execução de método da classe
         vname = pexp_pexplp.leaf[1].lower()
-        cname = pexp_pexplp.children[0].leaf[1].lower()
+
+        # new Classe().metodo()
+        if len(pexp_pexplp.children[0].leaf) > 1:
+            cname = pexp_pexplp.children[0].leaf[1].lower()
+        # this.metodo()
+        else:
+            cname = self.currClass
 
         paramlen = self.stab[cname][vname].paramlen
         params = self.stab[cname][vname].params
         optexps = self.cgen_optexps_part(pexp_pexplp.children[1])
+        label = f"exe_{cname}_{vname}"
+        if label in self.exe_table:
+            self.exe_table[label] +=1
+            label += f"{self.exe_table[label]}"
+        else:
+            self.exe_table[label] = 1
+            label += f"{self.exe_table[label]}"
         string = (
-            f"exe_{cname}_{vname}:\n"
+            f"{label}:\n"
             f"sw $fp, 0($sp)\n"
             f"addiu $sp, $sp, -4\n"
             f"{optexps}"
