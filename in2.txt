@@ -1,22 +1,16 @@
 class Factorial{
     public static void main(String[] a){
-        System.out.println(new Fac().ComputeFac());
+        System.out.println(new Fac().Compute(10));
     }
 }
 
 class Fac{
-    public int ComputeFac(){
-        int[] result;
-        boolean bool;
-        int a;
-        int b;
-        int c;
-        {
-            result = new int[4];
-            a = result.length;
-            num2 = b;
-            c = b;
-        }
-        return b;
-    }
+    public int Compute(int num){
+        int num_aux;
+        if (num >= 9)
+            num_nalloc = 1; // vai dar erro
+        else
+            num_aux = num * (this.Compute(num-1));
+        return num_aux ;
+ }
 }

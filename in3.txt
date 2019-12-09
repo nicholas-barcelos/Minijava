@@ -1,22 +1,16 @@
-class Main{
+class Factorial{
     public static void main(String[] a){
-        System.out.println(new Aexp().Compute(-1,2,3));
-        // System.out.println(new Aexp().Negate(true));
+        System.out.println(new Fac().ComputeFac(10,false)); // vai dar erro
     }
 }
 
-class Aexp{
-    public int Compute(int a, int b, int c){
+class Fac{
+    public int ComputeFac(int num,int num2){
         int num_aux;
-        if (a < 0)
-            num_aux = a * (b - 1) * c;
+        if (num < 1)
+            num_aux = 1;
         else
-            num_aux = a * c + b;
+            num_aux = num * (this.ComputeFac(num-1));
         return num_aux ;
-    }
-
-    public boolean Negate(boolean b) {
-        System.out.println(b);
-        return !b;
-    }
+ }
 }
