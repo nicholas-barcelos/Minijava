@@ -171,7 +171,7 @@ class Parser:
     
     def p_cmd_id(self, p):
         'cmd : ID LSBRACKET exp RSBRACKET ASSIGN exp SEMICOLON'
-        p[0] = nd.Node('cmd', [ p[3], p[6] ], [ p[1], p[2], p[4], p[5],p[6] ])
+        p[0] = nd.Node('cmd', [ p[3], p[6] ], [ p[1], p[2], p[4], p[5], p[7] ])
 
     #--------------EXP--------------#
     def p_exp_exp(self, p):
@@ -193,7 +193,7 @@ class Parser:
         """
         p[0] = nd.Node('rexp', [ p[1], p[3] ], [ p[2] ])
 
-    def p_resp_aexp(self, p):
+    def p_rexp_aexp(self, p):
         'rexp : aexp'
         p[0] = nd.Node('rexp', [ p[1] ], [])
 
@@ -367,9 +367,9 @@ class Parser:
                           |
         """
         if(len(p) > 2): # é a primeira produção
-            p[0] = nd.Node('loopvirgulatipoid', [ p[2], p[3] ], [ p[1] ])
+            p[0] = nd.Node('loopvirgulaexp', [ p[2], p[3] ], [ p[1] ])
         else:
-            p[0] = nd.Node('loopvirgulatipoid', [], [])
+            p[0] = nd.Node('loopvirgulaexp', [], [])
     #------------------------------FIM------------------------------#
 
     def p_error(self,p):
